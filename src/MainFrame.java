@@ -1,15 +1,21 @@
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingConstants;
 
 public class MainFrame extends JFrame{
 	public MainFrame() {
 		super("Pang");
 		createMenuBar();
+		firstFrame();
 	}
 	
 	private JMenuBar menuBar;
@@ -76,7 +82,14 @@ public class MainFrame extends JFrame{
 				loginFrame.setVisible(true);
 			}
 		}
-		
+	}
+	
+	private void firstFrame() {
+		JLabel titleLabel = new JLabel("PANG", SwingConstants.CENTER);
+		titleLabel.setFont(new Font("Arcade Classic", Font.BOLD, 72));
+		titleLabel.setForeground(new Color(255,50,50));
+		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(titleLabel);
 	}
 	
 }
