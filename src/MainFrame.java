@@ -78,7 +78,7 @@ public class MainFrame extends JFrame{
 			else if(event.getSource() == loginItem) {
 				LoginFrame loginFrame = new LoginFrame();
 				loginFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				loginFrame.setSize(400, 300);
+				loginFrame.setSize(400, 200);
 				loginFrame.setVisible(true);
 			}
 		}
