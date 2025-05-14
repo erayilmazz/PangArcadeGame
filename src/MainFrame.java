@@ -81,6 +81,12 @@ public class MainFrame extends JFrame{
 				loginFrame.setSize(400, 200);
 				loginFrame.setVisible(true);
 			}
+			else if(event.getSource() == registerItem) {
+				RegisterFrame registerFrame = new RegisterFrame();
+				registerFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+				registerFrame.setSize(400, 200);
+				registerFrame.setVisible(true);
+			}
 		}
 	}
 	
