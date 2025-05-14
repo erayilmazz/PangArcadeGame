@@ -1,7 +1,10 @@
+
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -22,15 +25,16 @@ import javax.swing.ImageIcon;
 
 
 
-public class LoginFrame extends JFrame{
+public class RegisterFrame extends JFrame{
+	static User user;
 	private JTextField nameField;
 	private JLabel nameLabel;
 	private JPasswordField passwordField;
 	private JLabel passwordLabel;
-	private JButton loginButton;
+	private JButton registerButton;
 	private JButton helpButton;
-	public LoginFrame(){
-		super("Login");
+	public RegisterFrame(){
+		super("Register");
 		setUndecorated(true);
 		getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
 		
@@ -55,11 +59,11 @@ public class LoginFrame extends JFrame{
 		passwordPanel.add(passwordField);
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		Icon loginIcon = new ImageIcon(getClass().getResource("/resources/login.png"));
-		loginButton = new JButton("Login", loginIcon);
+		Icon registerIcon = new ImageIcon(getClass().getResource("/resources/login.png"));
+		registerButton = new JButton("Register", registerIcon);
 		Icon helpIcon = new ImageIcon(getClass().getResource("/resources/help.png"));
 		helpButton = new JButton("Help", helpIcon);
-		buttonPanel.add(loginButton);
+		buttonPanel.add(registerButton);
 		buttonPanel.add(helpButton);
 		
 		mainPanel.add(Box.createVerticalGlue());
@@ -71,47 +75,38 @@ public class LoginFrame extends JFrame{
 		add(mainPanel);
 		
 		ButtonHandler handler = new ButtonHandler();
-		loginButton.addActionListener(handler);
+		registerButton.addActionListener(handler);
 		helpButton.addActionListener(handler);
 	}
 	private class ButtonHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			String passText = new String(passwordField.getPassword());
 			String nameText = new String(nameField.getText());
-			if(event.getSource() == loginButton) {
+			if(event.getSource() == registerButton) {
 				if (nameText.length() == 0) {
 					JOptionPane.showMessageDialog(null, "No name");
 				}
 				else if(passText.length() == 0) {
 					JOptionPane.showMessageDialog(null, "No password");
-				}else {
-					if(checkIsUsernameExist(nameText) == false) {
-						JOptionPane.showMessageDialog(null, "User name not exist");
-					}
-					else if(checkIsPasswordTrue(nameText, passText) == false) {
-						JOptionPane.showMessageDialog(null, "Wrong password");
+				}
+				else {
+					if(checkIsUsernameExist(nameText) == true) {
+						JOptionPane.showMessageDialog(null, "Username already exist.");
 					}
 					else {
-						JOptionPane.showMessageDialog(null, "Starting...");
+						createUser(nameText,passText);
+						
 					}
-					
 				}
-				//daha önce bu kullanıcı kayıtlı mı kontrolü
-				//kayıtlıysa şifresi doğru mu kontrol et
-				//uygun şifre kontrolü
-				//oyun başlatma ekranı ve useri texte kaydetme
-				
-			}
-			else if(event.getSource() == helpButton) {
-				JOptionPane.showMessageDialog(null, "help");
 			}
 		}
 	}
-	private boolean checkIsUsernameExist(String username) {
+	private static boolean checkIsUsernameExist(String username) {
 		try {
 			File file = new File("src/datas/userdata.csv");
 			FileReader fileReader = new FileReader(file);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			bufferedReader.readLine();
 			String line;
 			while((line = bufferedReader.readLine()) != null) {
 				String[] splitedLine = line.split(",");
@@ -122,29 +117,29 @@ public class LoginFrame extends JFrame{
 			fileReader.close();
 		}catch (IOException e){
 			System.out.println("An error occurred while reading from the file: ");
+			e.printStackTrace();
 		}
 		return false;
 	}
-	private boolean checkIsPasswordTrue(String username, String password) {
+	private static void createUser(String name, String password){
 		try {
+			String content = String.format("%s,%s\n",name,password);
 			File file = new File("src/datas/userdata.csv");
-			FileReader fileReader = new FileReader(file);
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			String line;
-			while((line = bufferedReader.readLine()) != null) {
-				String[] splitedLine = line.split(",");
-				String lineName = splitedLine[0];
-				String linePassword = splitedLine[1];
-				if (lineName.equals(username)) {
-					if(linePassword.equals(password)) return true;
-				}
+			FileWriter fileWriter = new FileWriter(file,true);
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+			if(file.length() == 0) {
+				bufferedWriter.write("username,password");
+				bufferedWriter.newLine();
 			}
-			bufferedReader.close();
-			fileReader.close();
+			bufferedWriter.write(content);
+			bufferedWriter.close();
+			fileWriter.close();
 		}catch (IOException e){
-			System.out.println("An error occurred while reading from the file: ");
+			System.out.println("An error occurred while writing from the file: ");
 		}
-		return false;
+		user = new User(name);
 	}
-	
 }
+
+
+
