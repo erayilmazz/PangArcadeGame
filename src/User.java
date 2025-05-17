@@ -7,23 +7,34 @@ import java.time.LocalTime;
 
 public class User {
 	private String username;
-	//private History userHistory
-	User(String username){
+	
+	public User(String username){
 		this.username = username;
 	}
+
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	private void saveScore(double score) {
 		try {
-			File file = new File("/files/history.txt");
+			File file = new File("src/datas/history.csv");
 			FileWriter fileWriter = new FileWriter(file);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 			LocalDate date = LocalDate.now();
 			LocalTime time = LocalTime.now();
-			String text = String.format(username,"|",date,"|", time, "|", score);
+			String text = String.format(getUsername(),",",date,",", time, ",", score);
 			bufferedWriter.write(text);
 			bufferedWriter.close();
 			fileWriter.close();
 		}catch(IOException e) {
 			System.out.println("An error accured while writing to history file");
 		}
+	}
+	private static String getHistory(){
+		
 	}
 }
