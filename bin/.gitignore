@@ -1,5 +1,9 @@
-/LauncherFrame.class
-/PangMenu.class
-/LauncherFrame$ButtonHandler.class
-/LauncherFrameTest.class
+/MainPanel.class
+/GameManager.class
+/Player.class
+/GamePanel.class
 /resources/
+/ImageLoader.class
+/ImageLoader$1.class
+/GameObject.class
+/Ball.class
