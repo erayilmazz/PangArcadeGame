@@ -102,16 +102,19 @@ public class MainFrame extends JFrame implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		if (key == KeyEvent.VK_LEFT) {
+			gm.player.setDirection("left");
 			gm.player.goLeft(5);
 		}
 		else if (key == KeyEvent.VK_RIGHT) {
+			gm.player.setDirection("right");
+			System.out.println("sa");
 			gm.player.goRight(5);
 		}
-		gamePanel.repaint();
+		
 	}
 	@Override
     public void keyReleased(KeyEvent e) {
-        
+        gm.player.setDirection("none");
     }
 
     @Override
