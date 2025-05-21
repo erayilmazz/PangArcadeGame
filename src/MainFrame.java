@@ -1,8 +1,11 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,11 +14,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame implements KeyListener{
+	GameManager gm = new GameManager();
+	GamePanel gamePanel = new GamePanel(gm);
+	//SubPanel subPanel = new SubPanel();
 	public MainFrame() {
 		super("Pang");
+		setLayout(new BorderLayout());
 		createMenuBar();
-		firstFrame();
+		add(gamePanel,BorderLayout.CENTER);
+		addKeyListener(this);
+		
 	}
 	
 	private JMenuBar menuBar;
@@ -89,13 +98,25 @@ public class MainFrame extends JFrame{
 			}
 		}
 	}
-	
-	private void firstFrame() {
-		JLabel titleLabel = new JLabel("PANG", SwingConstants.CENTER);
-		titleLabel.setFont(new Font("Arcade Classic", Font.BOLD, 72));
-		titleLabel.setForeground(new Color(255,50,50));
-		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(titleLabel);
+	@Override
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+		if (key == KeyEvent.VK_LEFT) {
+			gm.player.goLeft(5);
+		}
+		else if (key == KeyEvent.VK_RIGHT) {
+			gm.player.goRight(5);
+		}
+		gamePanel.repaint();
 	}
+	@Override
+    public void keyReleased(KeyEvent e) {
+        
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        
+    }
 	
 }
