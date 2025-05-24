@@ -92,6 +92,7 @@ public class LoginFrame extends JFrame{
 						JOptionPane.showMessageDialog(null, "Wrong password");
 					}
 					else {
+						MainFrame.accountActive = true;
 						JOptionPane.showMessageDialog(null, "Starting...");
 					}
 					

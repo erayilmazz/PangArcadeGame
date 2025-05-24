@@ -1,11 +1,3 @@
-/Ball.class
-/GameManager.class
-/GameObject.class
-/GamePanel.class
-/ImageLoader$1.class
-/ImageLoader.class
-/Player.class
-/SmallBall.class
-/MediumBall.class
-/LargeBall.class
-/ExtraLargeBall.class
+/Arrow.class
+/resources/
+/SmallBall$SmallBall.class
