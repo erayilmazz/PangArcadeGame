@@ -1,7 +1,7 @@
 
 public class MediumBall extends Ball{
-	private double vx = 2;
-	private double vy = -13;
+	private double vx = 2.25;
+	private double vy = 13;
 	public MediumBall(int x, int y){
 		super(x,y);
 		this.x = x;
@@ -19,9 +19,10 @@ public class MediumBall extends Ball{
             x = Math.max(16, Math.min(x, 750 - width)); 
         }
 
-        if (y < 15 || y > 350) {
+        if (y < 15 || y > 349) {
             vy = -vy;
-            y = Math.max(15, Math.min(y, 350)); 
+            y = Math.max(15, Math.min(y, 349));
+            vy = -13;
         }
     }
 }

@@ -1,13 +1,13 @@
 
 public class ExtraLargeBall extends Ball{
-	private double vx = 2;
-	private double vy = -13;
+	private double vx = 3;
+	private double vy = 16;
 	public ExtraLargeBall(int x, int y){
 		super(x,y);
 		this.x = x;
 		this.y = y;
-		width = 10;
-		height = 10;
+		width = 128;
+		height = 106;
 	}
 	@Override
 	public void move() {
@@ -19,9 +19,10 @@ public class ExtraLargeBall extends Ball{
             x = Math.max(16, Math.min(x, 750 - width)); 
         }
 
-        if (y < 15 || y > 350) {
+        if (y < 15 || y > 296) {
             vy = -vy;
-            y = Math.max(15, Math.min(y, 350)); 
+            y = Math.max(15, Math.min(y, 296)); 
+            vy = -16;
         }
     }
 	

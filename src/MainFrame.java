@@ -23,7 +23,9 @@ public class MainFrame extends JFrame implements KeyListener{
 		setLayout(new BorderLayout());
 		createMenuBar();
 		add(gamePanel,BorderLayout.CENTER);
+		gm.setGamePanel(gamePanel);
 		addKeyListener(this);
+		gm.startGameLoop();
 		
 	}
 	
@@ -107,7 +109,6 @@ public class MainFrame extends JFrame implements KeyListener{
 		}
 		else if (key == KeyEvent.VK_RIGHT) {
 			gm.player.setDirection("right");
-			System.out.println("sa");
 			gm.player.goRight(5);
 		}
 		
