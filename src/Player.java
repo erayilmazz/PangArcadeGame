@@ -6,9 +6,7 @@ public class Player extends GameObject{
 	protected int width, height;
 	
 	public Player() {
-		super(350,338);
-		width = 10;
-		height = 10;
+		super(350,338,10,10);
 	}
 	
 	public void goLeft(int num) {

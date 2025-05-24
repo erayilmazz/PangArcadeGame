@@ -111,6 +111,9 @@ public class MainFrame extends JFrame implements KeyListener{
 			gm.player.setDirection("right");
 			gm.player.goRight(5);
 		}
+		else if (key == KeyEvent.VK_SPACE) {
+			gm.createArrow();
+		}
 		
 	}
 	@Override

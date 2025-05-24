@@ -5,12 +5,11 @@ public class Ball extends GameObject{
 	private double vy = -13;
 	protected double gravity = 0.5; 
 	protected int width, height;
-	public Ball(int x, int y){
-		super(x,y);
-		this.x = x;
-		this.y = y;
-		width = 64;
-		height = 53;
+	protected boolean isExploded;
+	public int expodeImageIndex;
+	public Ball(int x, int y, int width, int height){
+		super(x,y,width,height);
+		isExploded = false;
 	}
 	public void move() {
         x += vx;
@@ -26,7 +25,12 @@ public class Ball extends GameObject{
             y = Math.max(15, Math.min(y, 350)); 
         }
     }
-	
+	public boolean isExploded() {
+		return isExploded;
+	}
+	public void setExploded(boolean isExploded) {
+		this.isExploded = isExploded;
+	}
 	public int getX() {return (int) x;}
 	public int getY() {return (int) y;}
 }
