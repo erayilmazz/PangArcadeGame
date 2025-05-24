@@ -6,11 +6,11 @@ public abstract class GameObject {
 	
 	
 	//public abstract void update();
-	public GameObject(int x, int y, int width, int height) {
+	public GameObject(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.width = width;
-		this.height = height;
+		width = 0;
+		height = 0;
 	}
 	public Rectangle getBounds() {
 		return new Rectangle(x, y, width, height);

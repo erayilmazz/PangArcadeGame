@@ -6,7 +6,7 @@ import javax.swing.Timer;
 public class GamePanel extends JPanel{
 	private GameManager gm;
 	private Timer animationTimer;
-	Ball ball = new Ball(350,338,1,1);
+	Ball ball = new Ball(350,338);
 	public GamePanel(GameManager gm) {
 		this.gm = gm;
 		startRepaintThread();

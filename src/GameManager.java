@@ -64,7 +64,7 @@ public class GameManager {
 	private void loadLevel(int level) {
 		balls = new LinkedList<>();
 		if(level == 1) {
-			balls.add(new Ball(350,338,64,53));//for medium
+			balls.add(new MediumBall(350,338));//for medium
 		}
 	}
 	public LinkedList<Ball> getBalls() {

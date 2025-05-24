@@ -1,17 +1,15 @@
 
-public class Ball extends GameObject{
-	protected double x,y;
+public class LargeBall extends Ball{
 	private double vx = 2;
 	private double vy = -13;
-	protected double gravity = 0.5; 
-	protected int width, height;
-	public Ball(int x, int y){
+	public LargeBall(int x, int y){
 		super(x,y);
 		this.x = x;
 		this.y = y;
-		width = 64;
-		height = 53;
+		width = 10;
+		height = 10;
 	}
+	@Override
 	public void move() {
         x += vx;
         vy += gravity; 
@@ -27,6 +25,4 @@ public class Ball extends GameObject{
         }
     }
 	
-	public int getX() {return (int) x;}
-	public int getY() {return (int) y;}
 }
