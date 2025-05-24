@@ -16,8 +16,10 @@ public class GamePanel extends JPanel{
 		super.paintComponent(g);
 		g.drawImage(gm.border, 0, 0, null);
 		g.drawImage(gm.getPlayerImage(), gm.player.getX(), gm.player.getY(), null);
-		for(Ball ball : gm.getBalls()) {
-			g.drawImage(gm.getBallImage(ball), ball.getX(), ball.getY(), null);
+		synchronized (gm.getBalls()) {
+			for(Ball ball : gm.getBalls()) {
+				g.drawImage(gm.getBallImage(ball), ball.getX(), ball.getY(), null);
+			}
 		}
 		if(gm.getArrows() != null) {
 			for(Arrow arrow : gm.getArrows()) {

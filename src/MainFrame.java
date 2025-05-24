@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -15,17 +16,17 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
 
 public class MainFrame extends JFrame implements KeyListener{
-	GameManager gm = new GameManager();
-	GamePanel gamePanel = new GamePanel(gm);
+	public static boolean accountActive = false;
+	public static boolean diffSelected = false;
+	public static boolean gameActive = false;
+	public static String diff;
+	GameManager gm;
 	//SubPanel subPanel = new SubPanel();
 	public MainFrame() {
 		super("Pang");
 		setLayout(new BorderLayout());
 		createMenuBar();
-		add(gamePanel,BorderLayout.CENTER);
-		gm.setGamePanel(gamePanel);
 		addKeyListener(this);
-		gm.startGameLoop();
 		
 	}
 	
@@ -39,7 +40,10 @@ public class MainFrame extends JFrame implements KeyListener{
 	JMenuItem quitItem;
 	JMenuItem historyItem;
 	JMenuItem scoresItem;
-	JMenuItem difficultyItem;
+	JMenu difficultyMenu;
+	JMenuItem noviceItem;
+	JMenuItem intermediateItem;
+	JMenuItem advancedItem;
 	JMenuItem aboutItem;
 	
 	private void createMenuBar() {
@@ -54,8 +58,13 @@ public class MainFrame extends JFrame implements KeyListener{
 		quitItem = new JMenuItem("Quit");
 		historyItem = new JMenuItem("History");
 		scoresItem = new JMenuItem("View high scores");
-		difficultyItem = new JMenuItem("Choose difficulty");
+		difficultyMenu = new JMenu("Choose difficulty");
+		noviceItem = new JMenuItem("Novice");
+		intermediateItem = new JMenuItem("Intermediate");
+		advancedItem = new JMenuItem("Advanced");
 		aboutItem = new JMenuItem("About");
+		
+		
 		
 		MenuBarHandler handler = new MenuBarHandler();
 		newItem.addActionListener(handler);
@@ -64,7 +73,9 @@ public class MainFrame extends JFrame implements KeyListener{
 		quitItem.addActionListener(handler);
 		historyItem.addActionListener(handler);
 		scoresItem.addActionListener(handler);
-		difficultyItem.addActionListener(handler);
+		noviceItem.addActionListener(handler);
+		intermediateItem.addActionListener(handler);
+		advancedItem.addActionListener(handler);
 		aboutItem.addActionListener(handler);
 		
 		gameMenu.add(newItem);
@@ -73,7 +84,10 @@ public class MainFrame extends JFrame implements KeyListener{
 		gameMenu.add(quitItem);
 		optionsMenu.add(historyItem);
 		optionsMenu.add(scoresItem);
-		optionsMenu.add(difficultyItem);
+		difficultyMenu.add(noviceItem);
+		difficultyMenu.add(intermediateItem);
+		difficultyMenu.add(advancedItem);
+		optionsMenu.add(difficultyMenu);
 		helpMenu.add(aboutItem);
 		
 		menuBar.add(gameMenu);
@@ -84,7 +98,22 @@ public class MainFrame extends JFrame implements KeyListener{
 	private class MenuBarHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			if(event.getSource() == newItem) {
-				System.out.println("Oyun başla");
+				if(!accountActive) {
+					JOptionPane.showMessageDialog(null, "Please log in","Error",JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if (!diffSelected) {
+					JOptionPane.showMessageDialog(null, "Please choose diff","Error",JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if(accountActive && diffSelected) {
+					gm = new GameManager(diff);
+					GamePanel gamePanel = new GamePanel(gm);
+					add(gamePanel,BorderLayout.CENTER);
+					revalidate();
+					repaint();
+					gm.setGamePanel(gamePanel);
+					gm.startGame();
+					gameActive = true;
+				}
 			}
 			else if(event.getSource() == loginItem) {
 				LoginFrame loginFrame = new LoginFrame();
@@ -97,6 +126,21 @@ public class MainFrame extends JFrame implements KeyListener{
 				registerFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 				registerFrame.setSize(400, 200);
 				registerFrame.setVisible(true);
+			}
+			else if(event.getSource() == quitItem) {
+				System.exit(0);
+			}
+			else if(event.getSource() == noviceItem) {
+				diff = "novice";
+				diffSelected = true;	
+			}
+			else if(event.getSource() == intermediateItem) {
+				diff = "intermediate";
+				diffSelected = true;	
+			}
+			else if(event.getSource() == advancedItem) {
+				diff = "advanced";
+				diffSelected = true;	
 			}
 		}
 	}
@@ -125,5 +169,6 @@ public class MainFrame extends JFrame implements KeyListener{
     public void keyTyped(KeyEvent e) {
         
     }
+    
 	
 }

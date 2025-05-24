@@ -94,6 +94,7 @@ public class RegisterFrame extends JFrame{
 						JOptionPane.showMessageDialog(null, "Username already exist.");
 					}
 					else {
+						MainFrame.accountActive = true;
 						createUser(nameText,passText);
 						
 					}
