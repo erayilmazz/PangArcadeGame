@@ -1,16 +1,19 @@
 import java.awt.Color;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+
 import javax.swing.Timer;
 
 
 
 
 public class GameManager {
-	public Image border, playerImage, arrow0Image, shootPlayerImage, emptyImage;
+	public Image border, playerImage, arrow0Image, shootPlayerImage, emptyImage, healthImage, dynamiteImage, clockImage, fixedArrowImage, doubleArrowImage;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
 	public List<Image> smallBallImages = new ArrayList<>();
@@ -24,6 +27,8 @@ public class GameManager {
 	Player player;
 	private LinkedList<Ball> balls;
 	private LinkedList<Arrow> arrows;
+	private LinkedList<FallingObject> fallingObjects;
+	private List<String> fallingObjectsList = Arrays.asList("health","dynamite","clock","fixedArrow","doubleArrow");
 	public String diff;
 	public boolean isGamePaused = true;
 	private Timer gameTimer;
@@ -35,6 +40,7 @@ public class GameManager {
 	public GameManager(String diff){
 		balls = new LinkedList <>();
 		arrows = new LinkedList <>();
+		fallingObjects = new LinkedList <>();
 		setDiff(diff);
 		//loadResources();
 		//loadLevel(1);
@@ -66,6 +72,11 @@ public class GameManager {
 						}
 						arrow.move();
 					}
+					for(FallingObject object : fallingObjects) {
+						if(object.getY() < 350) {
+							object.move();
+						}
+					}
 					checkPlayerBallCollision();
 					checkArrowBallCollision();
 					updateAnimation();
@@ -95,8 +106,13 @@ public class GameManager {
 		arrow0Image = id.loadImage("/resources/arrow0.png",Color.WHITE);
 		shootPlayerImage = id.loadImage("/resources/playerShoot.png",Color.green);
 		emptyImage = id.loadImage("/resources/empty.png",Color.white);
+		healthImage = id.loadImage("/resources/health.png",Color.GREEN);
+		dynamiteImage = id.loadImage("/resources/dynamite.png",Color.GREEN);
+		clockImage = id.loadImage("/resources/clock.png",Color.GREEN);
+		fixedArrowImage = id.loadImage("/resources/fixedArrow.png",Color.GREEN);
+		doubleArrowImage = id.loadImage("/resources/doubleArrow.png",Color.GREEN);
 		for(int i = 0; i <= 4; i++) {
-			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.GREEN));
+			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.green));
 			rightImages.add(id.loadImage("/resources/playerRight" + i + ".png", Color.GREEN));
 			smallBallImages.add(id.loadImage("/resources/small" + i + ".png",Color.GREEN));
 			mediumBallImages.add(id.loadImage("/resources/Medium" + i + ".png",Color.GREEN));
@@ -120,15 +136,18 @@ public class GameManager {
 			//balls.add(new ExtraLargeBall(100,200,diff));//200
 		}else if(level == 2) {
 			player.resetCor();
+			player.setInvisible(false);
 			currentLevel = 2;
 			balls.add(new MediumBall(100,300,diff));
 			player.resetCor();
 		}else if (level == 3) {
 			player.resetCor();
+			player.setInvisible(false);
 			currentLevel = 3;
 			balls.add(new LargeBall(100,250,diff));
 		}else if (level == 4) {
 			player.resetCor();
+			player.setInvisible(false);
 			currentLevel = 4;
 			balls.add(new ExtraLargeBall(100,200,diff));
 		}
@@ -182,6 +201,9 @@ public class GameManager {
 						if(ball instanceof ExtraLargeBall) score += 50;
 						ball.setExploded(true);
 						arrows.remove(arrow);
+						Random rand = new Random();
+						String randomItem = fallingObjectsList.get(rand.nextInt(fallingObjectsList.size()));
+						fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),16,16,randomItem));
 						
 					}
 				}
@@ -265,11 +287,22 @@ public class GameManager {
 	public Image getArrowImage(Arrow arrow) {
 		return arrow0Image;
 	}
+	public Image getFallingObjectsImage(FallingObject object) {
+		if(object.getObject() == "health") return healthImage;
+		else if(object.getObject() == "dynamite") return dynamiteImage;
+		else if(object.getObject() == "clock") return clockImage;
+		else if(object.getObject() == "doubleArrow") return doubleArrowImage;
+		else if(object.getObject() == "fixedArrow") return fixedArrowImage;
+		return emptyImage;
+	}
 	public LinkedList<Ball> getBalls() {
 		return balls;
 	}
 	public LinkedList<Arrow> getArrows(){
 		return arrows;
+	}
+	public LinkedList<FallingObject> getFallingObjects() {
+		return fallingObjects;
 	}
 	public void setGamePanel(GamePanel gamePanel) {
 	    this.gamePanel = gamePanel;

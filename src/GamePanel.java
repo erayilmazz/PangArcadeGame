@@ -27,6 +27,11 @@ public class GamePanel extends JPanel{
 				g.drawImage(gm.getArrowImage(arrow), arrow.getX(), arrow.getY(), null);
 			}
 		}
+		if(gm.getFallingObjects() != null) {
+			for(FallingObject object : gm.getFallingObjects()) {
+				g.drawImage(gm.getFallingObjectsImage(object),object.getX(), object.getY(),null);
+			}
+		}
 		g.setFont(new Font("Arial", Font.BOLD, 20));
 		g.setColor(Color.BLACK);
 		g.drawString("TIME: " + gm.getCountdown(),630, 50);
