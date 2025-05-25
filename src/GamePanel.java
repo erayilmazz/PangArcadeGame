@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.JPanel;
@@ -5,7 +7,6 @@ import javax.swing.Timer;
 
 public class GamePanel extends JPanel{
 	private GameManager gm;
-	private Timer animationTimer;
 	//Ball ball = new Ball(350,338);
 	public GamePanel(GameManager gm) {
 		this.gm = gm;
@@ -26,6 +27,9 @@ public class GamePanel extends JPanel{
 				g.drawImage(gm.getArrowImage(arrow), arrow.getX(), arrow.getY(), null);
 			}
 		}
+		g.setFont(new Font("Arial", Font.BOLD, 20));
+		g.setColor(Color.BLACK);
+		g.drawString("TIME: " + gm.getCountdown(),630, 50);
 	}
 	
 	

@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.Timer;
 
 
 
 
 public class GameManager {
-	public Image border, playerImage, arrow0Image, shootPlayerImage;
+	public Image border, playerImage, arrow0Image, shootPlayerImage, emptyImage;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
 	public List<Image> smallBallImages = new ArrayList<>();
@@ -17,15 +18,21 @@ public class GameManager {
 	public List<Image> largeBallImages = new ArrayList<>();
 	public List<Image> extraLargeImages = new ArrayList<>();
 	public List<Image> arrowImages = new ArrayList<>();
+	private int score = 0;
 	private int currentImageIndex = 0;
 	private ImageLoader id = new ImageLoader();
 	Player player;
 	private LinkedList<Ball> balls;
 	private LinkedList<Arrow> arrows;
 	public String diff;
+	public boolean isGamePaused = true;
+	private Timer gameTimer;
+	private int countdown = 98;
+	private int invisibleTime;
+	private int currentLevel;
 	private GamePanel gamePanel;
+	private SubPanel subPanel;
 	public GameManager(String diff){
-		player = new Player();
 		balls = new LinkedList <>();
 		arrows = new LinkedList <>();
 		setDiff(diff);
@@ -38,31 +45,41 @@ public class GameManager {
 		loadResources();
 		setGamePanel(gamePanel);
 		loadLevel(1,diff);
-		gamePanel.repaint();
-		startGameLoop();
 	}
 	public void startGameLoop() {
 		new Thread(() -> {
 			while(true) {
-				synchronized (balls) {
-					handleExplotion();
-					for(Ball ball :balls) {
-						if(ball.isExploded()) {
-							ball.expodeImageIndex++;
+				if(!isGamePaused) {
+					synchronized (balls) {
+						handleExplotion();
+						for(Ball ball :balls) {
+							if(ball.isExploded()) {
+								ball.expodeImageIndex++;
+							}
+							else ball.move();
 						}
-						else ball.move();
+					}
+					for(Arrow arrow : arrows) {
+						if(arrow.getY() <= 16) {
+							arrows.remove(arrow);
+							continue;
+						}
+						arrow.move();
+					}
+					checkPlayerBallCollision();
+					checkArrowBallCollision();
+					updateAnimation();
+					if(player.isInvisible() == true) checkInvisible();
+					if(balls.isEmpty()) {
+						gameTimer.stop();
+						countdown = 98;
+						currentLevel ++;
+						loadLevel(currentLevel,diff);
+						isGamePaused = true;
+						break;
 					}
 				}
-				for(Arrow arrow : arrows) {
-					if(arrow.getY() <= 16) {
-						arrows.remove(arrow);
-						continue;
-					}
-					arrow.move();
-				}
-				checkPlayerBallCollision();
-				checkArrowBallCollision();
-				updateAnimation();
+				subPanel.modifySubPanel();
 				gamePanel.repaint();
 				try {
 					Thread.sleep(16);
@@ -73,10 +90,11 @@ public class GameManager {
 		}).start();
 	}
 	private void loadResources() {
-		border = id.loadImage("/resources/border.png");
+		border = id.loadImage("/resources/border.png",Color.WHITE);
 		playerImage = id.loadImage("/resources/player.png",Color.GREEN);
 		arrow0Image = id.loadImage("/resources/arrow0.png",Color.WHITE);
 		shootPlayerImage = id.loadImage("/resources/playerShoot.png",Color.green);
+		emptyImage = id.loadImage("/resources/empty.png",Color.white);
 		for(int i = 0; i <= 4; i++) {
 			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.GREEN));
 			rightImages.add(id.loadImage("/resources/playerRight" + i + ".png", Color.GREEN));
@@ -94,11 +112,39 @@ public class GameManager {
 	private void loadLevel(int level, String diff) {
 		balls = new LinkedList<>();
 		if(level == 1) {
+			currentLevel = 1;
 			balls.add(new SmallBall(100,350,diff));//350
-			balls.add(new MediumBall(100,300,diff));//300
-			balls.add(new LargeBall(100,250,diff));//250
-			balls.add(new ExtraLargeBall(100,200,diff));//200
+			player = new Player(diff);
+			//balls.add(new MediumBall(100,300,diff));//300
+			//balls.add(new LargeBall(100,250,diff));//250
+			//balls.add(new ExtraLargeBall(100,200,diff));//200
+		}else if(level == 2) {
+			player.resetCor();
+			currentLevel = 2;
+			balls.add(new MediumBall(100,300,diff));
+			player.resetCor();
+		}else if (level == 3) {
+			player.resetCor();
+			currentLevel = 3;
+			balls.add(new LargeBall(100,250,diff));
+		}else if (level == 4) {
+			player.resetCor();
+			currentLevel = 4;
+			balls.add(new ExtraLargeBall(100,200,diff));
 		}
+		gameTimer = new Timer(1000, e -> {
+			countdown--;
+            if(countdown == 95) {
+            	isGamePaused = false;
+            }else if(countdown < 0) {
+            	gameTimer.stop();
+            	System.out.print("GAMEEEE");
+            }
+        });
+		gameTimer.start();
+		gamePanel.revalidate();
+		gamePanel.repaint();
+        startGameLoop();
 	}
 	
 	public void createArrow() {
@@ -109,12 +155,20 @@ public class GameManager {
 	}
 	
 	private void checkPlayerBallCollision() {
-		for(Ball ball : balls) {
-			//System.out.println(ball.getBounds().getX());
-			if(ball.getBounds().intersects(player.getBounds())) {
-				//System.out.println("Game over");
+		if(!player.isInvisible()) {
+			for(Ball ball : balls) {
+				//System.out.println(ball.getBounds().getX());
+				if(ball.getBounds().intersects(player.getBounds())) {
+					//System.out.println("Game over");
+					player.decreaseHealthBar();
+					player.setInvisible(true);
+					invisibleTime = countdown - 3;
+				}
 			}
 		}
+	}
+	private void checkInvisible() {
+		if(countdown == invisibleTime) player.setInvisible(false);
 	}
 	private void checkArrowBallCollision() {
 		for(Arrow arrow : arrows) {
@@ -122,7 +176,10 @@ public class GameManager {
 				for(Ball ball : balls) {
 					//System.out.println(ball.getBounds().getX());
 					if(ball.getBounds().intersects(arrow.getBounds())) {
-						System.out.println("Game over");
+						if(ball instanceof SmallBall) score += 200;
+						if(ball instanceof MediumBall) score += 150;
+						if(ball instanceof LargeBall) score += 100;
+						if(ball instanceof ExtraLargeBall) score += 50;
 						ball.setExploded(true);
 						arrows.remove(arrow);
 						
@@ -132,6 +189,9 @@ public class GameManager {
 		}
 	}
 	public Image getPlayerImage() {
+		if(player.isInvisible() && (currentImageIndex%5) == 0) {
+			return emptyImage;
+		}
 		if(player.getDirection().equals("left")) {
 			return leftImages.get(currentImageIndex/10);
 		}
@@ -214,11 +274,24 @@ public class GameManager {
 	public void setGamePanel(GamePanel gamePanel) {
 	    this.gamePanel = gamePanel;
 	}
+	public void setSubPanel(SubPanel subPanel) {
+		this.subPanel = subPanel;
+	}
 	public String getDiff() {
 		return diff;
 	}
 	public void setDiff(String diff) {
 		this.diff = diff;
 	}
+	public int getCountdown() {
+		return countdown;
+	}
+	public int getCurrentLevel() {
+		return currentLevel;
+	}
+	public int getScore() {
+		return score;
+	}
+	
 	
 }
