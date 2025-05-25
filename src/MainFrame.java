@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +22,9 @@ public class MainFrame extends JFrame implements KeyListener{
 	public static boolean gameActive = false;
 	public static String diff;
 	GameManager gm;
+	GamePanel gamePanel;
+	SubPanel subPanel;
+	
 	//SubPanel subPanel = new SubPanel();
 	public MainFrame() {
 		super("Pang");
@@ -98,6 +102,11 @@ public class MainFrame extends JFrame implements KeyListener{
 	private class MenuBarHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
 			if(event.getSource() == newItem) {
+				if(gameActive) {
+					remove(gamePanel);
+					remove(subPanel);
+					gameActive = false;
+				}
 				if(!accountActive) {
 					JOptionPane.showMessageDialog(null, "Please log in","Error",JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -106,12 +115,16 @@ public class MainFrame extends JFrame implements KeyListener{
 				}
 				else if(accountActive && diffSelected) {
 					gm = new GameManager(diff);
-					GamePanel gamePanel = new GamePanel(gm);
+					gamePanel = new GamePanel(gm);
+					subPanel = new SubPanel(gm);
 					add(gamePanel,BorderLayout.CENTER);
+					add(subPanel, BorderLayout.SOUTH);
+					subPanel.setPreferredSize(new Dimension(782,123));
+					gm.setGamePanel(gamePanel);
+					gm.setSubPanel(subPanel);
+					gm.startGame();
 					revalidate();
 					repaint();
-					gm.setGamePanel(gamePanel);
-					gm.startGame();
 					gameActive = true;
 				}
 			}
@@ -146,19 +159,21 @@ public class MainFrame extends JFrame implements KeyListener{
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		int key = e.getKeyCode();
-		if (key == KeyEvent.VK_LEFT) {
-			gm.player.setDirection("left");
-			gm.player.goLeft(5);
+		if(!gm.isGamePaused) {
+			int key = e.getKeyCode();
+			if (key == KeyEvent.VK_LEFT) {
+				gm.player.setDirection("left");
+				gm.player.goLeft(5);
+			}
+			else if (key == KeyEvent.VK_RIGHT) {
+				gm.player.setDirection("right");
+				gm.player.goRight(5);
+			}
+			else if (key == KeyEvent.VK_SPACE) {
+				gm.createArrow();
+			}
 		}
-		else if (key == KeyEvent.VK_RIGHT) {
-			gm.player.setDirection("right");
-			gm.player.goRight(5);
-		}
-		else if (key == KeyEvent.VK_SPACE) {
-			gm.createArrow();
-		}
-		
+			
 	}
 	@Override
     public void keyReleased(KeyEvent e) {
