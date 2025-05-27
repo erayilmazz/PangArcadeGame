@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -13,7 +14,8 @@ import javax.swing.Timer;
 
 
 public class GameManager {
-	public Image border, playerImage, arrow0Image, shootPlayerImage, emptyImage, healthImage, dynamiteImage, clockImage, fixedArrowImage, doubleArrowImage;
+	public Image border, playerImage, shootPlayerImage, emptyImage, healthImage, dynamiteImage, clockImage, fixedArrowImage, doubleArrowImage;
+	public BufferedImage arrow0Image;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
 	public List<Image> smallBallImages = new ArrayList<>();
@@ -62,8 +64,13 @@ public class GameManager {
 				if(!isGamePaused) {
 					if(freezeTime == countdown) {
 						isFreeze = false;
-						freezeTime = 97;
+						freezeTime = 98;
 					}
+					if(arrowTime == countdown) {
+						arrowType = "normal";
+						arrowTime = 98;
+					}
+					player.move();
 					synchronized (balls) {
 						handleExplotion();
 						for(Ball ball :balls) {
@@ -75,9 +82,12 @@ public class GameManager {
 							}
 						}
 					}
-					for(Arrow arrow : arrows) {
+					for(Arrow arrow : arrows) {	
 						if(arrow.getY() <= 16) {
-							arrows.remove(arrow);
+							if(arrow.getType().equals("normal") || arrow.getType().equals("double"))arrows.remove(arrow);
+							else if(arrow.getType().equals("fixed") && arrow.getFixedTime() == countdown) {
+								arrows.remove(arrow);
+							}
 							continue;
 						}
 						arrow.move();
@@ -96,6 +106,9 @@ public class GameManager {
 						currentLevel ++;
 						fallingObjects.clear();
 						isFreeze = false;
+						player.resetCor();
+						player.setInvisible(false);
+						arrowType = "normal";
 						loadLevel(currentLevel,diff);
 						isGamePaused = true;
 						break;
@@ -114,7 +127,7 @@ public class GameManager {
 	private void loadResources() {
 		border = id.loadImage("/resources/border.png",Color.WHITE);
 		playerImage = id.loadImage("/resources/player.png",Color.GREEN);
-		arrow0Image = id.loadImage("/resources/arrow0.png",Color.WHITE);
+		arrow0Image = id.loadBufferedImage("/resources/arrow.png",Color.RED);
 		shootPlayerImage = id.loadImage("/resources/playerShoot.png",Color.green);
 		emptyImage = id.loadImage("/resources/empty.png",Color.white);
 		healthImage = id.loadImage("/resources/health.png",Color.GREEN);
@@ -146,19 +159,13 @@ public class GameManager {
 			//balls.add(new LargeBall(100,250,diff));//250
 			//balls.add(new ExtraLargeBall(100,200,diff));//200
 		}else if(level == 2) {
-			player.resetCor();
-			player.setInvisible(false);
 			currentLevel = 2;
 			balls.add(new MediumBall(100,300,diff));
 			player.resetCor();
 		}else if (level == 3) {
-			player.resetCor();
-			player.setInvisible(false);
 			currentLevel = 3;
 			balls.add(new LargeBall(100,250,diff));
 		}else if (level == 4) {
-			player.resetCor();
-			player.setInvisible(false);
 			currentLevel = 4;
 			balls.add(new ExtraLargeBall(100,200,diff));
 		}
@@ -178,9 +185,35 @@ public class GameManager {
 	}
 	
 	public void createArrow() {
-		if(arrows.isEmpty()) {
-			player.setDirection("shoot");
-			arrows.add(new Arrow(player.getX() + 18, player.getY()));
+		switch (arrowType){
+		case("normal"):
+			if(arrows.isEmpty()) {
+				player.setDirection("shoot");
+				Arrow arrow = new Arrow(player.getX() + 18, player.getY());
+				arrow.setType("normal");
+				arrows.add(arrow);
+			}
+			break;
+		case("fixed"):
+			if(arrows.isEmpty()) {
+				player.setDirection("shoot");
+				Arrow arrow = new Arrow(player.getX() + 18, player.getY());
+				arrow.setFixedTime(countdown - 5);
+				arrow.setType("fixed");
+				arrows.add(arrow);	
+			}
+			break;
+		
+		case("double"):
+			if(arrows.size() <= 1) {
+				player.setDirection("shoot");
+				Arrow arrow = new Arrow(player.getX() + 18, player.getY());
+				arrow.setType("double");
+				arrows.add(arrow);
+			}
+			break;
+		
+		
 		}
 	}
 	
@@ -229,7 +262,9 @@ public class GameManager {
 			if(object.getBounds().intersects(player.getBounds())) {
 				//"health","dynamite","clock","fixedArrow","doubleArrow"
 				switch(object.getObject()) {
-				case "health" : player.increaseHealthBar();
+				case "health" : 
+					player.increaseHealthBar();
+					break;
 				case "dynamite":
 					for(Ball ball : balls) {
 						if(!(ball instanceof SmallBall)) {
@@ -245,11 +280,13 @@ public class GameManager {
 				case "fixedArrow":
 					arrowType = "fixed";
 					arrowTime = countdown - 20;
+					break;
 				case "doubleArrow":
 					arrowType = "double";
 					arrowTime = countdown - 20;
+					break;
 				}
-				fallingObjects.remove(object);
+				it.remove();
 			}
 		}
 		
@@ -328,8 +365,9 @@ public class GameManager {
 			balls.addAll(toAdd);  
 		} 
 	}
-	public Image getArrowImage(Arrow arrow) {
-		return arrow0Image;
+	public BufferedImage getArrowImage(Arrow arrow) {
+		BufferedImage croppedImage = arrow0Image.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
+		return croppedImage;
 	}
 	public Image getFallingObjectsImage(FallingObject object) {
 		if(object.getObject() == "health") return healthImage;
