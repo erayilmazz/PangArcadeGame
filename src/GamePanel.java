@@ -16,7 +16,6 @@ public class GamePanel extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
 		g.setColor(Color.BLACK); 
         Rectangle r = gm.player.getBounds();
         g.fillRect(r.x, r.y, r.width, r.height);
@@ -30,7 +29,7 @@ public class GamePanel extends JPanel{
 		}
 		if(gm.getArrows() != null) {
 			for(Arrow arrow : gm.getArrows()) {
-				g.drawImage(gm.getArrowImage(arrow), arrow.getX(), arrow.getY(), null);
+				g.drawImage(gm.getArrowImage(arrow), arrow.getX(), arrow.getDrawY(), arrow.getWidth(), arrow.getHeight(), null);
 			}
 		}
 		if(gm.getFallingObjects() != null) {

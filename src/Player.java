@@ -3,7 +3,6 @@ import java.awt.Rectangle;
 public class Player extends GameObject{
 	//private int playerX = 350;
 	//private int playerY = 338;
-	//TRUE OLUCAK PLAYERDA DEĞİŞTİRECEK
 	private String direction = "none";
 	protected int width, height;
 	private String diff;
@@ -22,14 +21,12 @@ public class Player extends GameObject{
 		default: return new Rectangle(getX() + 10, getY(), getWidth() - 12, getHeight());
 		}
 	}
-	
-	public void goLeft(int num) {
-		if(x > 10) x -= (num * getMultiplier());
-		direction = "left";
-	}
-	public void goRight(int num) {
-		if(x < 690) x += (num * getMultiplier());
-		direction = "right";
+	public void move() {
+		if(direction == "left") {
+			if(x > 10) x -= (2 * getMultiplier());
+		}else if(direction == "right") {
+			if(x < 690) x += (2 * getMultiplier());
+		}
 	}
 	
 	public String getDirection() {

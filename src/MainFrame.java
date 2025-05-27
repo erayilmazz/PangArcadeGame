@@ -163,11 +163,9 @@ public class MainFrame extends JFrame implements KeyListener{
 			int key = e.getKeyCode();
 			if (key == KeyEvent.VK_LEFT) {
 				gm.player.setDirection("left");
-				gm.player.goLeft(5);
 			}
 			else if (key == KeyEvent.VK_RIGHT) {
 				gm.player.setDirection("right");
-				gm.player.goRight(5);
 			}
 			else if (key == KeyEvent.VK_SPACE) {
 				gm.createArrow();
