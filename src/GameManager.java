@@ -27,6 +27,7 @@ public class GameManager {
 	Player player;
 	private LinkedList<Ball> balls;
 	private LinkedList<Arrow> arrows;
+	private String arrowType = "normal";
 	private LinkedList<FallingObject> fallingObjects;
 	private List<String> fallingObjectsList = Arrays.asList("health","dynamite","clock","fixedArrow","doubleArrow");
 	public String diff;
@@ -34,6 +35,9 @@ public class GameManager {
 	private Timer gameTimer;
 	private int countdown = 98;
 	private int invisibleTime;
+	private int freezeTime;
+	private boolean isFreeze = false;
+	private int arrowTime;
 	private int currentLevel;
 	private GamePanel gamePanel;
 	private SubPanel subPanel;
@@ -56,13 +60,19 @@ public class GameManager {
 		new Thread(() -> {
 			while(true) {
 				if(!isGamePaused) {
+					if(freezeTime == countdown) {
+						isFreeze = false;
+						freezeTime = 97;
+					}
 					synchronized (balls) {
 						handleExplotion();
 						for(Ball ball :balls) {
 							if(ball.isExploded()) {
 								ball.expodeImageIndex++;
 							}
-							else ball.move();
+							else {
+								if (!isFreeze) ball.move();
+							}
 						}
 					}
 					for(Arrow arrow : arrows) {
@@ -73,18 +83,19 @@ public class GameManager {
 						arrow.move();
 					}
 					for(FallingObject object : fallingObjects) {
-						if(object.getY() < 350) {
-							object.move();
-						}
+						object.move();
 					}
 					checkPlayerBallCollision();
 					checkArrowBallCollision();
+					checkPlayerItemCollision();
 					updateAnimation();
 					if(player.isInvisible() == true) checkInvisible();
 					if(balls.isEmpty()) {
 						gameTimer.stop();
 						countdown = 98;
 						currentLevel ++;
+						fallingObjects.clear();
+						isFreeze = false;
 						loadLevel(currentLevel,diff);
 						isGamePaused = true;
 						break;
@@ -209,6 +220,39 @@ public class GameManager {
 				}
 			}
 		}
+	}
+	private void checkPlayerItemCollision() {
+		
+		Iterator<FallingObject> it = fallingObjects.iterator();
+		while(it.hasNext()) {
+			FallingObject object = it.next();
+			if(object.getBounds().intersects(player.getBounds())) {
+				//"health","dynamite","clock","fixedArrow","doubleArrow"
+				switch(object.getObject()) {
+				case "health" : player.increaseHealthBar();
+				case "dynamite":
+					for(Ball ball : balls) {
+						if(!(ball instanceof SmallBall)) {
+							ball.setExploded(true);
+						}
+					}
+					break;
+				case "clock":
+					freezeTime = countdown - 5;
+					System.out.println(freezeTime);
+					isFreeze = true;
+					break;
+				case "fixedArrow":
+					arrowType = "fixed";
+					arrowTime = countdown - 20;
+				case "doubleArrow":
+					arrowType = "double";
+					arrowTime = countdown - 20;
+				}
+				fallingObjects.remove(object);
+			}
+		}
+		
 	}
 	public Image getPlayerImage() {
 		if(player.isInvisible() && (currentImageIndex%5) == 0) {

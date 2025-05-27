@@ -6,7 +6,9 @@ public class FallingObject extends GameObject{
 		this.object=object;
 	}
 	public void move() {
-		y+=5;
+		if(y < 380) {
+			y+=5;
+		}
 	}
 	public String getObject() {
 		return object;
