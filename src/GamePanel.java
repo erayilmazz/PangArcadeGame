@@ -19,8 +19,8 @@ public class GamePanel extends JPanel{
 		g.setColor(Color.BLACK); 
         Rectangle r = gm.player.getBounds();
         g.fillRect(r.x, r.y, r.width, r.height);
+        g.drawImage(gm.getLevelImage(),0,0,null);
 		g.drawImage(gm.border, 0, 0, null);
-		
 		g.drawImage(gm.getPlayerImage(), gm.player.getX(), gm.player.getY(), null);
 		synchronized (gm.getBalls()) {
 			for(Ball ball : gm.getBalls()) {
