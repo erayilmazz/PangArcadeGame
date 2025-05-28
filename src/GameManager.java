@@ -14,7 +14,7 @@ import javax.swing.Timer;
 
 
 public class GameManager {
-	public Image border, playerImage, shootPlayerImage, emptyImage, healthImage, dynamiteImage, clockImage, fixedArrowImage, doubleArrowImage;
+	public Image border,antalya,ankara,izmir,istanbul,playerImage,shootPlayerImage,emptyImage,healthImage,dynamiteImage,clockImage,fixedArrowImage,doubleArrowImage;
 	public BufferedImage arrow0Image;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
@@ -93,7 +93,7 @@ public class GameManager {
 						arrow.move();
 					}
 					for(FallingObject object : fallingObjects) {
-						object.move();
+						if(object.isFalling()) object.move();
 					}
 					checkPlayerBallCollision();
 					checkArrowBallCollision();
@@ -126,6 +126,10 @@ public class GameManager {
 	}
 	private void loadResources() {
 		border = id.loadImage("/resources/border.png",Color.WHITE);
+		antalya = id.loadImage("/resources/antalya.png");
+		ankara = id.loadImage("/resources/ankara.png");
+		izmir = id.loadImage("/resources/izmir.png");
+		istanbul = id.loadImage("/resources/istanbul.png");
 		playerImage = id.loadImage("/resources/player.png",Color.GREEN);
 		arrow0Image = id.loadBufferedImage("/resources/arrow.png",Color.RED);
 		shootPlayerImage = id.loadImage("/resources/playerShoot.png",Color.green);
@@ -247,7 +251,7 @@ public class GameManager {
 						arrows.remove(arrow);
 						Random rand = new Random();
 						String randomItem = fallingObjectsList.get(rand.nextInt(fallingObjectsList.size()));
-						fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),16,16,randomItem));
+						fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),24,24,randomItem));
 						
 					}
 				}
@@ -286,6 +290,7 @@ public class GameManager {
 					arrowTime = countdown - 20;
 					break;
 				}
+				score += 100;
 				it.remove();
 			}
 		}
@@ -376,6 +381,20 @@ public class GameManager {
 		else if(object.getObject() == "doubleArrow") return doubleArrowImage;
 		else if(object.getObject() == "fixedArrow") return fixedArrowImage;
 		return emptyImage;
+	}
+	public Image getLevelImage() {
+		switch(currentLevel) {
+		case 1:
+			return antalya;
+		case 2:
+			return ankara;
+		case 3:
+			return izmir;
+		case 4:
+			return istanbul;
+		default:
+			return emptyImage;
+		}
 	}
 	public LinkedList<Ball> getBalls() {
 		return balls;
