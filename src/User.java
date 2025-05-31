@@ -19,14 +19,17 @@ public class User {
 		this.username = username;
 	}
 
-	private void saveScore(double score) {
+	public void saveScore(double score) {
+		System.out.println("save score");
 		try {
 			File file = new File("src/datas/history.csv");
-			FileWriter fileWriter = new FileWriter(file);
+			FileWriter fileWriter = new FileWriter(file,true);
 			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-			LocalDate date = LocalDate.now();
-			LocalTime time = LocalTime.now();
-			String text = String.format(getUsername(),",",date,",", time, ",", score);
+			LocalDate localDate = LocalDate.now();
+			String date = String.format("%f.%f.%f",localDate.getDayOfMonth(),localDate.getMonth(),localDate.getYear());
+			LocalTime localTime = LocalTime.now();
+			String time = String.format("%f.%f",localTime.getHour(),localTime.getMinute());
+			String text = String.format("%s,%s,%s,%f",getUsername(),date, time,score);
 			bufferedWriter.write(text);
 			bufferedWriter.close();
 			fileWriter.close();
@@ -35,6 +38,6 @@ public class User {
 		}
 	}
 	private static String getHistory(){
-		
+		return "";
 	}
 }

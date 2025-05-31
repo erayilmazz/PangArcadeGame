@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -24,6 +25,7 @@ public class MainFrame extends JFrame implements KeyListener{
 	GameManager gm;
 	GamePanel gamePanel;
 	SubPanel subPanel;
+	public static User user;
 	
 	//SubPanel subPanel = new SubPanel();
 	public MainFrame() {
@@ -182,6 +184,8 @@ public class MainFrame extends JFrame implements KeyListener{
     public void keyTyped(KeyEvent e) {
         
     }
-    
+    public void setUser(User user) {
+		this.user = user;
+	}
 	
 }

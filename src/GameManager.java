@@ -27,6 +27,8 @@ public class GameManager {
 	public List<Image> blockx = new ArrayList<>();
 	public List<Image> blocky = new ArrayList<>();
 	private int score = 0;
+	private int totalScore = 0;
+	private int timeBonus = 0;
 	private int currentImageIndex = 0;
 	private ImageLoader id = new ImageLoader();
 	Player player;
@@ -46,6 +48,7 @@ public class GameManager {
 	private int arrowTime;
 	private int currentLevel;
 	private boolean isScoreScreen = false;
+	private boolean isGameOver = false;
 	private GamePanel gamePanel;
 	private SubPanel subPanel;
 	public GameManager(String diff){
@@ -73,9 +76,11 @@ public class GameManager {
         });
 		loadLevel(1,diff);
 	}
+	boolean running;
 	public void startGameLoop() {
+		running = true;
 		new Thread(() -> {
-			while(true) {
+			while(running) {
 				if(!isGamePaused) {
 					if(freezeTime == countdown) {
 						isFreeze = false;
@@ -84,6 +89,9 @@ public class GameManager {
 					if(arrowTime == countdown) {
 						arrowType = "normal";
 						arrowTime = 98;
+					}
+					if(countdown <= 0) {
+						gameOver();
 					}
 					player.move();
 					synchronized (balls) {
@@ -102,8 +110,8 @@ public class GameManager {
 										//System.out.println("değdi");
 										resolveCollision(block,ball);
 										ball.isFirstCollisionBlock = false;
-										
 									}
+									break;
 								}else {
 									ball.setCollisionBlock(false);
 								}
@@ -123,11 +131,12 @@ public class GameManager {
 					for(FallingObject object : fallingObjects) {
 						if(object.isFalling()) object.move();
 					}
-					for(Block block: blocks) {
+					Iterator<Block> it = blocks.iterator();
+					while(it.hasNext()) {
+						Block block = it.next();
 						if(block.isDestroyed()) block.destroyImageIndex ++;
 						if(block.destroyImageIndex >= 24) {
-							blocks.remove(block);
-							continue;
+							it.remove();
 						}
 					}
 					checkPlayerBallCollision();
@@ -138,7 +147,8 @@ public class GameManager {
 					if(player.isInvisible() == true) checkInvisible();
 					if(balls.isEmpty()) {
 						if(currentLevel == 4) {
-							//burda bitirme ekranına gidecek
+							gameOver();
+							break;
 						}
 							
 						loadNextLevel();
@@ -152,6 +162,7 @@ public class GameManager {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				if(isGameOver()) running = false;
 			}
 		}).start();
 	}
@@ -221,6 +232,9 @@ public class GameManager {
         startGameLoop();
 	}
 	private void loadNextLevel() {
+		timeBonus = countdown * 10;
+		totalScore += (score + timeBonus);
+		isScoreScreen = true;
 		gameTimer.stop();
 		countdown = 97;
 		currentLevel ++;
@@ -231,15 +245,15 @@ public class GameManager {
 		arrowType = "normal";
 		arrows.clear();
 		blocks.clear();
-		isScoreScreen = true;
 		gamePanel.repaint();
 		new Timer(5000, e -> {
 			loadLevel(currentLevel,diff);
 			((javax.swing.Timer) e.getSource()).stop();
+			isScoreScreen = false;
+			isGamePaused = true;
+			timeBonus = 0;
+			score = 0;
 		}).start();
-		//burda 5 saniye boyunca beklemesini istiyorum ardından loadLevel çalışsın
-		isScoreScreen = false;
-		isGamePaused = true;
 	}
 	public void createArrow() {
 		switch (arrowType){
@@ -281,6 +295,10 @@ public class GameManager {
 				if(ball.getCircleBounds().intersects(player.getBounds())) {
 					//System.out.println("Game over");
 					player.decreaseHealthBar();
+					if(player.getHealthBar() <= 0) {
+						gameOver();
+						break;
+					}
 					player.setInvisible(true);
 					invisibleTime = countdown - 3;
 				}
@@ -349,15 +367,13 @@ public class GameManager {
 		
 	}
 	private void checkArrowBlockCollision() {
-		Iterator<Block> it = blocks.iterator();
-		Iterator<Arrow> it2 = arrows.iterator();
+		Iterator<Arrow> it = arrows.iterator();
 		while(it.hasNext()) {
-			Block block = it.next();
-			while(it2.hasNext()) {
-				Arrow arrow = it2.next();
+			Arrow arrow = it.next();
+			for(Block block:blocks) {
 				if(block.getBounds().intersects(arrow.getBounds())) {
 					block.setDestroyed(true);
-					it2.remove();
+					it.remove();
 				}
 			}
 		}
@@ -508,6 +524,14 @@ public class GameManager {
 			return emptyImage;
 		}
 	}
+	public void gameOver() {
+		System.out.println("Game over");
+		System.out.println(MainFrame.user.getUsername());
+		isGameOver = true;
+		gamePanel.repaint();
+		MainFrame.user.saveScore(totalScore);
+		
+	}
 	public LinkedList<Ball> getBalls() {
 		return balls;
 	}
@@ -547,6 +571,20 @@ public class GameManager {
 	public void setScoreScreen(boolean isScoreScreen) {
 		this.isScoreScreen = isScoreScreen;
 	}
-	
+	public int getTotalScore() {
+		return totalScore;
+	}
+	public void setTotalScore(int totalScore) {
+		this.totalScore = totalScore;
+	}
+	public int getTimeBonus() {
+		return timeBonus;
+	}
+	public boolean isGameOver() {
+		return isGameOver;
+	}
+	public void setGameOver(boolean isGameOver) {
+		this.isGameOver = isGameOver;
+	}
 	
 }

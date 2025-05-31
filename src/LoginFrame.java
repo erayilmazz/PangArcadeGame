@@ -93,6 +93,7 @@ public class LoginFrame extends JFrame{
 					}
 					else {
 						MainFrame.accountActive = true;
+						MainFrame.user = new User(nameText);
 						JOptionPane.showMessageDialog(null, "Starting...");
 					}
 					

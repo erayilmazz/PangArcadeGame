@@ -18,7 +18,21 @@ public class GamePanel extends JPanel{
 		super.paintComponent(g);
 		g.setColor(Color.BLACK);
 		if(gm.isScoreScreen()) {
-			System.out.print("evet");
+			g.fillRect(0,0,getWidth(),getHeight());
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Monospaced", Font.BOLD, 24));
+			g.drawString("SCORE: " + gm.getScore(),300, 150);
+			g.drawString("TIME BONUS: "+ gm.getTimeBonus(),300,200);
+			g.drawString("TOTAL SCORE: "+ gm.getTotalScore(),300,250);
+			return;
+		}
+		if(gm.isGameOver()) {
+			g.fillRect(0,0,getWidth(),getHeight());
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Monospaced", Font.BOLD, 24));
+			g.drawString("GAME OVER",300, 150);
+			//g.drawString("SCORE: "+ gm.getTimeBonus(),300,200);
+			g.drawString("SCORE: "+ gm.getTotalScore(),300,250);
 			return;
 		}
         Rectangle r = gm.player.getBounds();
