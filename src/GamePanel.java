@@ -29,6 +29,8 @@ public class GamePanel extends JPanel{
 		synchronized (gm.getBalls()) {
 			for(Ball ball : gm.getBalls()) {
 				g.drawImage(gm.getBallImage(ball), ball.getX(), ball.getY(), null);
+				//Rectangle ballLeft = new Rectangle(ball.getX()+ball.getWidth()-1,ball.getY(),10,ball.getHeight());
+				//g.fillRect(ballLeft.x, ballLeft.y, ballLeft.width, ballLeft.height);
 			}
 		}
 		if(gm.getArrows() != null) {
@@ -39,6 +41,19 @@ public class GamePanel extends JPanel{
 		if(gm.getFallingObjects() != null) {
 			for(FallingObject object : gm.getFallingObjects()) {
 				g.drawImage(gm.getFallingObjectsImage(object),object.getX(), object.getY(),null);
+			}
+		}
+		if(gm.getBlocks() != null) {
+			for(Block block : gm.getBlocks()) {
+				g.drawImage(gm.getBlockImage(block),block.getX(), block.getY(),null);
+				Rectangle blockRight = new Rectangle(block.getX()+block.getWidth()-1,block.getY(),1,block.getHeight());
+				Rectangle blockLeft = new Rectangle(block.getX(),block.getY(),1,block.getHeight());
+				Rectangle blockTop = new Rectangle(block.getX(),block.getY(),block.getWidth(),1);
+				Rectangle blockBottom = new Rectangle(block.getX(),block.getY() + block.getHeight() - 1,block.getWidth(),1);
+				g.fillRect(blockRight.x, blockRight.y, blockRight.width, blockRight.height);
+				g.fillRect(blockLeft.x, blockLeft.y, blockLeft.width, blockLeft.height);
+				g.fillRect(blockTop.x, blockTop.y, blockTop.width, blockTop.height);
+				g.fillRect(blockBottom.x, blockBottom.y, blockBottom.width, blockBottom.height);
 			}
 		}
 		g.setFont(new Font("Arial", Font.BOLD, 20));

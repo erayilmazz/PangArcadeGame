@@ -15,6 +15,11 @@ public class MediumBall extends Ball{
 	}
 	@Override
 	public void move() {
+		if(isFirstCollisionBlock) {
+			reverseX();
+			reverseY();
+			isFirstCollisionBlock = false;
+		}
 		move++;
 		if(firstMove) {
 			vy = 0;
@@ -37,5 +42,11 @@ public class MediumBall extends Ball{
 	        }
 		}
     }
+	public int getX() {return  x;}
+	public int getY() {return  y;}
 	public void reverseX() {vx = -vx;}
+	public void reverseY() {vy = -vy;}
+	public void setVy(double vy) {
+		this.vy = vy;
+	}
 }

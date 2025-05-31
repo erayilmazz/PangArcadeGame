@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +24,8 @@ public class GameManager {
 	public List<Image> largeBallImages = new ArrayList<>();
 	public List<Image> extraLargeImages = new ArrayList<>();
 	public List<Image> arrowImages = new ArrayList<>();
+	public List<Image> blockx = new ArrayList<>();
+	public List<Image> blocky = new ArrayList<>();
 	private int score = 0;
 	private int currentImageIndex = 0;
 	private ImageLoader id = new ImageLoader();
@@ -32,6 +35,7 @@ public class GameManager {
 	private String arrowType = "normal";
 	private LinkedList<FallingObject> fallingObjects;
 	private List<String> fallingObjectsList = Arrays.asList("health","dynamite","clock","fixedArrow","doubleArrow");
+	private LinkedList<Block> blocks;
 	public String diff;
 	public boolean isGamePaused = true;
 	private Timer gameTimer;
@@ -48,6 +52,7 @@ public class GameManager {
 		balls = new LinkedList <>();
 		arrows = new LinkedList <>();
 		fallingObjects = new LinkedList <>();
+		blocks = new LinkedList <>();
 		setDiff(diff);
 		//loadResources();
 		//loadLevel(1);
@@ -85,10 +90,19 @@ public class GameManager {
 						handleExplotion();
 						for(Ball ball :balls) {
 							if(ball.isExploded()) {
-								ball.expodeImageIndex++;
+								ball.explodeImageIndex++;
 							}
 							else {
 								if (!isFreeze) ball.move();
+							}
+							for(Block block : blocks) {
+								if(ball.getCircleBounds().intersects(block.getBounds())) {
+									ball.setCollisionBlock(true);
+									if(ball.isFirstCollisionBlock) resolveCollision(block,ball);
+									break;
+								}else {
+									ball.setCollisionBlock(false);
+								}
 							}
 						}
 					}
@@ -105,9 +119,17 @@ public class GameManager {
 					for(FallingObject object : fallingObjects) {
 						if(object.isFalling()) object.move();
 					}
+					for(Block block: blocks) {
+						if(block.isDestroyed()) block.destroyImageIndex ++;
+						if(block.destroyImageIndex >= 24) {
+							blocks.remove(block);
+							continue;
+						}
+					}
 					checkPlayerBallCollision();
 					checkArrowBallCollision();
 					checkPlayerItemCollision();
+					checkArrowBlockCollision();
 					updateAnimation();
 					if(player.isInvisible() == true) checkInvisible();
 					if(balls.isEmpty()) {
@@ -151,6 +173,8 @@ public class GameManager {
 			mediumBallImages.add(id.loadImage("/resources/Medium" + i + ".png",Color.GREEN));
 			largeBallImages.add(id.loadImage("/resources/Large" + i + ".png",Color.GREEN));
 			extraLargeImages.add(id.loadImage("/resources/ExtraLarge" + i + ".png",Color.GREEN));
+			blockx.add(id.loadImage("/resources/blockx" + i + ".png"));
+			blocky.add(id.loadImage("/resources/blocky" + i + ".png"));
 		}
 	}
 	public void updateAnimation() {
@@ -164,18 +188,28 @@ public class GameManager {
 			currentLevel = 1;
 			balls.add(new SmallBall(100,350,diff));//350
 			player = new Player(diff);
+			blocks.add(new Block(300,150,16,64,'y'));
+			blocks.add(new Block(450,150,16,64,'y'));
+			blocks.add(new Block(316,214,64,16,'x'));
+			balls.add(new LargeBall(317,130,diff));
+			//balls.add(new ExtraLargeBall(100,200,diff));
+			//balls.add(new LargeBall(100,250,diff));
+			//balls.add(new MediumBall(100,50,diff));
 			//balls.add(new MediumBall(100,300,diff));//300
 			//balls.add(new LargeBall(100,250,diff));//250
 			//balls.add(new ExtraLargeBall(100,200,diff));//200
 		}else if(level == 2) {
 			currentLevel = 2;
 			balls.add(new MediumBall(100,300,diff));
+			blocks.add(new Block(200,200,64,16,'x'));
 		}else if (level == 3) {
 			currentLevel = 3;
 			balls.add(new LargeBall(100,250,diff));
+			blocks.add(new Block(200,200,64,16,'x'));
 		}else if (level == 4) {
 			currentLevel = 4;
 			balls.add(new ExtraLargeBall(100,200,diff));
+			blocks.add(new Block(200,200,64,16,'x'));
 		}
 		gameTimer.restart();
 		gamePanel.revalidate();
@@ -192,6 +226,7 @@ public class GameManager {
 		player.setInvisible(false);
 		arrowType = "normal";
 		arrows.clear();
+		blocks.clear();
 		isScoreScreen = true;
 		gamePanel.repaint();
 		new Timer(5000, e -> {
@@ -239,7 +274,7 @@ public class GameManager {
 		if(!player.isInvisible()) {
 			for(Ball ball : balls) {
 				//System.out.println(ball.getBounds().getX());
-				if(ball.getBounds().intersects(player.getBounds())) {
+				if(ball.getCircleBounds().intersects(player.getBounds())) {
 					//System.out.println("Game over");
 					player.decreaseHealthBar();
 					player.setInvisible(true);
@@ -256,7 +291,7 @@ public class GameManager {
 			synchronized (balls) {
 				for(Ball ball : balls) {
 					//System.out.println(ball.getBounds().getX());
-					if(ball.getBounds().intersects(arrow.getBounds())) {
+					if(ball.getCircleBounds().intersects(arrow.getBounds())) {
 						if(ball instanceof SmallBall) score += 200;
 						if(ball instanceof MediumBall) score += 150;
 						if(ball instanceof LargeBall) score += 100;
@@ -273,7 +308,6 @@ public class GameManager {
 		}
 	}
 	private void checkPlayerItemCollision() {
-		
 		Iterator<FallingObject> it = fallingObjects.iterator();
 		while(it.hasNext()) {
 			FallingObject object = it.next();
@@ -310,6 +344,35 @@ public class GameManager {
 		}
 		
 	}
+	private void checkArrowBlockCollision() {
+		Iterator<Block> it = blocks.iterator();
+		Iterator<Arrow> it2 = arrows.iterator();
+		while(it.hasNext()) {
+			Block block = it.next();
+			while(it2.hasNext()) {
+				Arrow arrow = it2.next();
+				if(block.getBounds().intersects(arrow.getBounds())) {
+					block.setDestroyed(true);
+					it2.remove();
+				}
+			}
+		}
+	}
+	/*
+	private void checkBallBlockCollision() {
+		for(Ball ball : balls) {
+				for(Block block : blocks) {
+					if(ball.getBounds().intersects(block.getBounds())) {
+						ball.setCollisionBlock(true);
+						if(ball.isFirstCollisionBlock) ball.resolveCollision(block);
+						break;
+					}else {
+						ball.setCollisionBlock(false);
+					}
+				}
+		}
+	}
+	*/
 	public Image getPlayerImage() {
 		if(player.isInvisible() && (currentImageIndex%5) == 0) {
 			return emptyImage;
@@ -327,32 +390,12 @@ public class GameManager {
 		}
 		
 	}
-	public Image getBallImage(Ball ball) {
-		int indexNum = ball.expodeImageIndex;
-		if(ball instanceof SmallBall && !ball.isExploded()) return smallBallImages.get(0);
-		else if(ball instanceof SmallBall && ball.isExploded()){
-			return smallBallImages.get(indexNum/2);
-		}
-		if(ball instanceof MediumBall && !ball.isExploded()) return mediumBallImages.get(0);
-		else if(ball instanceof MediumBall && ball.isExploded()){
-			return mediumBallImages.get(indexNum/2);
-		}
-		if(ball instanceof LargeBall && !ball.isExploded()) return largeBallImages.get(0);
-		else if(ball instanceof LargeBall && ball.isExploded()){
-			return largeBallImages.get(indexNum/2);
-		}
-		if(ball instanceof ExtraLargeBall && !ball.isExploded()) return extraLargeImages.get(0);
-		else if(ball instanceof ExtraLargeBall && ball.isExploded()){
-			return extraLargeImages.get(indexNum/2);
-		}
-		return null;
-	}
 	private void handleExplotion() {
 		List<Ball> toAdd = new LinkedList<>();
 		Iterator<Ball> iterator = balls.iterator();
 		while(iterator.hasNext()) {
 			Ball ball = iterator.next();
-			if(ball.isExploded() && ball.expodeImageIndex >= 9) {
+			if(ball.isExploded() && ball.explodeImageIndex >= 9) {
 				iterator.remove();
 				if(ball instanceof MediumBall) {
 					SmallBall s1 = new SmallBall(ball.getX(),ball.getY(),diff);
@@ -384,6 +427,56 @@ public class GameManager {
 			balls.addAll(toAdd);  
 		} 
 	}
+	public void resolveCollision(Block block, Ball ball) {
+		Rectangle blockRight = new Rectangle(block.getX()+block.getWidth()-1,block.getY(),1,block.getHeight());
+		Rectangle blockLeft = new Rectangle(block.getX(),block.getY(),1,block.getHeight());
+		Rectangle blockTop = new Rectangle(block.getX(),block.getY(),block.getWidth(),1);
+		Rectangle blockBottom = new Rectangle(block.getX(),block.getY() + block.getHeight() - 1,block.getWidth(),1);
+		if(ball.getCircleBounds().intersects(blockTop) && (ball.getCircleBounds().intersects(blockLeft) || ball.getCircleBounds().intersects(blockRight))) {
+			ball.reverseX();
+			ball.isFirstCollisionBlock = false;
+			return;
+		}
+		if(ball.getCircleBounds().intersects(blockBottom) && (ball.getCircleBounds().intersects(blockLeft) || ball.getCircleBounds().intersects(blockRight))) {
+			
+			ball.reverseY();
+			ball.isFirstCollisionBlock = false;
+			return;
+		}
+		if(ball.getCircleBounds().intersects(blockBottom)) {
+			ball.reverseY();
+		}
+		else if(ball.getCircleBounds().intersects(blockTop)) {
+			ball.reverseY();
+		}
+		else if(ball.getCircleBounds().intersects(blockLeft)) {
+			ball.reverseX();
+		}
+		else if(ball.getCircleBounds().intersects(blockRight)) {
+			ball.reverseX();
+		}
+		ball.isFirstCollisionBlock = false;
+	}
+	public Image getBallImage(Ball ball) {
+		int indexNum = ball.explodeImageIndex;
+		if(ball instanceof SmallBall && !ball.isExploded()) return smallBallImages.get(0);
+		else if(ball instanceof SmallBall && ball.isExploded()){
+			return smallBallImages.get(indexNum/2);
+		}
+		if(ball instanceof MediumBall && !ball.isExploded()) return mediumBallImages.get(0);
+		else if(ball instanceof MediumBall && ball.isExploded()){
+			return mediumBallImages.get(indexNum/2);
+		}
+		if(ball instanceof LargeBall && !ball.isExploded()) return largeBallImages.get(0);
+		else if(ball instanceof LargeBall && ball.isExploded()){
+			return largeBallImages.get(indexNum/2);
+		}
+		if(ball instanceof ExtraLargeBall && !ball.isExploded()) return extraLargeImages.get(0);
+		else if(ball instanceof ExtraLargeBall && ball.isExploded()){
+			return extraLargeImages.get(indexNum/2);
+		}
+		return null;
+	}
 	public BufferedImage getArrowImage(Arrow arrow) {
 		BufferedImage croppedImage = arrow0Image.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
 		return croppedImage;
@@ -395,6 +488,10 @@ public class GameManager {
 		else if(object.getObject() == "doubleArrow") return doubleArrowImage;
 		else if(object.getObject() == "fixedArrow") return fixedArrowImage;
 		return emptyImage;
+	}
+	public Image getBlockImage(Block block) {
+		if(block.getType() == 'x') return blockx.get(block.destroyImageIndex/5);
+		else return blocky.get(block.destroyImageIndex/5);
 	}
 	public Image getLevelImage() {
 		switch(currentLevel) {
@@ -418,6 +515,9 @@ public class GameManager {
 	}
 	public LinkedList<FallingObject> getFallingObjects() {
 		return fallingObjects;
+	}
+	public LinkedList<Block> getBlocks() {
+		return blocks;
 	}
 	public void setGamePanel(GamePanel gamePanel) {
 	    this.gamePanel = gamePanel;

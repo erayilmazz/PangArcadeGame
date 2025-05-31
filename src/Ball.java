@@ -1,3 +1,5 @@
+import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 
 public class Ball extends GameObject{
 	protected int x,y;
@@ -6,11 +8,16 @@ public class Ball extends GameObject{
 	protected double gravity = 0.5; 
 	protected int width, height;
 	protected boolean isExploded;
-	public int expodeImageIndex;
+	public int explodeImageIndex;
 	private boolean firstMove = true;
+	protected boolean isCollisionBlock = false;
+	public boolean isFirstCollisionBlock = false;
 	public Ball(int x, int y, int width, int height){
 		super(x,y,width,height);
 		isExploded = false;
+	}
+	public Ellipse2D  getCircleBounds() {
+		return new Ellipse2D.Double(getX(),getY(),getWidth(),getHeight());
 	}
 	public void move() {
 		if(firstMove) {
@@ -36,7 +43,21 @@ public class Ball extends GameObject{
 	public void setExploded(boolean isExploded) {
 		this.isExploded = isExploded;
 	}
+	public boolean isCollisionBlock() {
+		return isCollisionBlock;
+	}
+	public void setCollisionBlock(boolean isCollisionBlock) {
+		if(isCollisionBlock() == false && isCollisionBlock == true) {
+			isFirstCollisionBlock = true;
+		}
+		this.isCollisionBlock = isCollisionBlock;
+	}
 	public int getX() {return  x;}
 	public int getY() {return  y;}
 	public void reverseX() {vx = -vx;}
+	public void reverseY() {vy = -vy;}
+	public void setVy(double vy) {
+		this.vy = vy;
+	}
+	
 }
