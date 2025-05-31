@@ -49,4 +49,7 @@ public class MediumBall extends Ball{
 	public void setVy(double vy) {
 		this.vy = vy;
 	}
+	public double getVy() {
+		return vy;
+	}
 }

@@ -98,8 +98,12 @@ public class GameManager {
 							for(Block block : blocks) {
 								if(ball.getCircleBounds().intersects(block.getBounds())) {
 									ball.setCollisionBlock(true);
-									if(ball.isFirstCollisionBlock) resolveCollision(block,ball);
-									break;
+									if(ball.isFirstCollisionBlock) {
+										//System.out.println("değdi");
+										resolveCollision(block,ball);
+										ball.isFirstCollisionBlock = false;
+										
+									}
 								}else {
 									ball.setCollisionBlock(false);
 								}
@@ -188,7 +192,7 @@ public class GameManager {
 			currentLevel = 1;
 			balls.add(new SmallBall(100,350,diff));//350
 			player = new Player(diff);
-			blocks.add(new Block(300,150,16,64,'y'));
+			blocks.add(new Block(300,160,16,64,'y'));
 			blocks.add(new Block(450,150,16,64,'y'));
 			blocks.add(new Block(316,214,64,16,'x'));
 			balls.add(new LargeBall(317,130,diff));
@@ -428,34 +432,31 @@ public class GameManager {
 		} 
 	}
 	public void resolveCollision(Block block, Ball ball) {
-		Rectangle blockRight = new Rectangle(block.getX()+block.getWidth()-1,block.getY(),1,block.getHeight());
+		Rectangle blockRight = new Rectangle(block.getX()+block.getWidth(),block.getY(),1,block.getHeight());
 		Rectangle blockLeft = new Rectangle(block.getX(),block.getY(),1,block.getHeight());
 		Rectangle blockTop = new Rectangle(block.getX(),block.getY(),block.getWidth(),1);
-		Rectangle blockBottom = new Rectangle(block.getX(),block.getY() + block.getHeight() - 1,block.getWidth(),1);
-		if(ball.getCircleBounds().intersects(blockTop) && (ball.getCircleBounds().intersects(blockLeft) || ball.getCircleBounds().intersects(blockRight))) {
-			ball.reverseX();
-			ball.isFirstCollisionBlock = false;
+		Rectangle blockBottom = new Rectangle(block.getX(),block.getY() + block.getHeight(),block.getWidth(),1);
+		boolean top = ball.getCircleBounds().intersects(blockTop);
+		boolean bottom = ball.getCircleBounds().intersects(blockBottom);
+		boolean left = ball.getCircleBounds().intersects(blockLeft);
+		boolean right = ball.getCircleBounds().intersects(blockRight);
+		if((top) && (left || right)) {
+			if(ball.getVy() > 0) {
+				ball.reverseY();
+			}
+			else ball.reverseX();
 			return;
 		}
-		if(ball.getCircleBounds().intersects(blockBottom) && (ball.getCircleBounds().intersects(blockLeft) || ball.getCircleBounds().intersects(blockRight))) {
-			
+		if((bottom) && (left || right)) {	
 			ball.reverseY();
-			ball.isFirstCollisionBlock = false;
 			return;
 		}
-		if(ball.getCircleBounds().intersects(blockBottom)) {
+		if(top || bottom) {
 			ball.reverseY();
 		}
-		else if(ball.getCircleBounds().intersects(blockTop)) {
-			ball.reverseY();
-		}
-		else if(ball.getCircleBounds().intersects(blockLeft)) {
+		if(left || right) {
 			ball.reverseX();
 		}
-		else if(ball.getCircleBounds().intersects(blockRight)) {
-			ball.reverseX();
-		}
-		ball.isFirstCollisionBlock = false;
 	}
 	public Image getBallImage(Ball ball) {
 		int indexNum = ball.explodeImageIndex;

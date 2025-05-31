@@ -59,5 +59,9 @@ public class Ball extends GameObject{
 	public void setVy(double vy) {
 		this.vy = vy;
 	}
+	public double getVy() {
+		return vy;
+	}
+	
 	
 }
