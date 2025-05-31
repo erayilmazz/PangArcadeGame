@@ -41,6 +41,7 @@ public class GameManager {
 	private boolean isFreeze = false;
 	private int arrowTime;
 	private int currentLevel;
+	private boolean isScoreScreen = false;
 	private GamePanel gamePanel;
 	private SubPanel subPanel;
 	public GameManager(String diff){
@@ -56,6 +57,15 @@ public class GameManager {
 	public void startGame() {
 		loadResources();
 		setGamePanel(gamePanel);
+		gameTimer = new Timer(1000, e -> {
+			countdown--;
+            if(countdown == 95) {
+            	isGamePaused = false;
+            }else if(countdown < 0) {
+            	gameTimer.stop();
+            	System.out.print("GAMEEEE");
+            }
+        });
 		loadLevel(1,diff);
 	}
 	public void startGameLoop() {
@@ -101,16 +111,11 @@ public class GameManager {
 					updateAnimation();
 					if(player.isInvisible() == true) checkInvisible();
 					if(balls.isEmpty()) {
-						gameTimer.stop();
-						countdown = 98;
-						currentLevel ++;
-						fallingObjects.clear();
-						isFreeze = false;
-						player.resetCor();
-						player.setInvisible(false);
-						arrowType = "normal";
-						loadLevel(currentLevel,diff);
-						isGamePaused = true;
+						if(currentLevel == 4) {
+							//burda bitirme ekranına gidecek
+						}
+							
+						loadNextLevel();
 						break;
 					}
 				}
@@ -152,7 +157,7 @@ public class GameManager {
 		currentImageIndex++;
 		if(currentImageIndex == 50) currentImageIndex = 0;
 	}
-
+	
 	private void loadLevel(int level, String diff) {
 		balls = new LinkedList<>();
 		if(level == 1) {
@@ -165,7 +170,6 @@ public class GameManager {
 		}else if(level == 2) {
 			currentLevel = 2;
 			balls.add(new MediumBall(100,300,diff));
-			player.resetCor();
 		}else if (level == 3) {
 			currentLevel = 3;
 			balls.add(new LargeBall(100,250,diff));
@@ -173,21 +177,31 @@ public class GameManager {
 			currentLevel = 4;
 			balls.add(new ExtraLargeBall(100,200,diff));
 		}
-		gameTimer = new Timer(1000, e -> {
-			countdown--;
-            if(countdown == 95) {
-            	isGamePaused = false;
-            }else if(countdown < 0) {
-            	gameTimer.stop();
-            	System.out.print("GAMEEEE");
-            }
-        });
-		gameTimer.start();
+		gameTimer.restart();
 		gamePanel.revalidate();
 		gamePanel.repaint();
         startGameLoop();
 	}
-	
+	private void loadNextLevel() {
+		gameTimer.stop();
+		countdown = 97;
+		currentLevel ++;
+		fallingObjects.clear();
+		isFreeze = false;
+		player.resetCor();
+		player.setInvisible(false);
+		arrowType = "normal";
+		arrows.clear();
+		isScoreScreen = true;
+		gamePanel.repaint();
+		new Timer(5000, e -> {
+			loadLevel(currentLevel,diff);
+			((javax.swing.Timer) e.getSource()).stop();
+		}).start();
+		//burda 5 saniye boyunca beklemesini istiyorum ardından loadLevel çalışsın
+		isScoreScreen = false;
+		isGamePaused = true;
+	}
 	public void createArrow() {
 		switch (arrowType){
 		case("normal"):
@@ -425,6 +439,12 @@ public class GameManager {
 	}
 	public int getScore() {
 		return score;
+	}
+	public boolean isScoreScreen() {
+		return isScoreScreen;
+	}
+	public void setScoreScreen(boolean isScoreScreen) {
+		this.isScoreScreen = isScoreScreen;
 	}
 	
 	

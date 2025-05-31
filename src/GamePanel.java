@@ -16,7 +16,11 @@ public class GamePanel extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setColor(Color.BLACK); 
+		g.setColor(Color.BLACK);
+		if(gm.isScoreScreen()) {
+			System.out.print("evet");
+			return;
+		}
         Rectangle r = gm.player.getBounds();
         g.fillRect(r.x, r.y, r.width, r.height);
         g.drawImage(gm.getLevelImage(),0,0,null);
