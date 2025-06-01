@@ -157,6 +157,24 @@ public class MainFrame extends JFrame implements KeyListener{
 				diff = "advanced";
 				diffSelected = true;	
 			}
+			else if(event.getSource() == historyItem) {
+				HistoryFrame historyFrame = new HistoryFrame(user);
+				historyFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+				historyFrame.setSize(400, 200);
+				historyFrame.setVisible(true);
+			}
+			else if(event.getSource() == scoresItem) {
+				HighScoreFrame highScore = new HighScoreFrame();
+				highScore.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+				highScore.setSize(400, 200);
+				highScore.setVisible(true);
+			}
+			else if(event.getSource() == aboutItem) {
+				AboutFrame aboutFrame = new AboutFrame();
+				aboutFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+				aboutFrame.setSize(400, 200);
+				aboutFrame.setVisible(true);
+			}
 		}
 	}
 	@Override

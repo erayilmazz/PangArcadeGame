@@ -15,7 +15,7 @@ import javax.swing.Timer;
 
 
 public class GameManager {
-	public Image border,antalya,ankara,izmir,istanbul,playerImage,shootPlayerImage,emptyImage,healthImage,dynamiteImage,clockImage,fixedArrowImage,doubleArrowImage;
+	public Image border,antalya,ankara,izmir,istanbul,playerImage,shootPlayerImage,emptyImage,healthImage,dynamiteImage,clockImage,fixedArrowImage,doubleArrowImage,black;
 	public BufferedImage arrow0Image;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
@@ -181,6 +181,7 @@ public class GameManager {
 		clockImage = id.loadImage("/resources/clock.png",Color.GREEN);
 		fixedArrowImage = id.loadImage("/resources/fixedArrow.png",Color.GREEN);
 		doubleArrowImage = id.loadImage("/resources/doubleArrow.png",Color.GREEN);
+		black = id.loadImage("/resources/black.png");
 		for(int i = 0; i <= 4; i++) {
 			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.green));
 			rightImages.add(id.loadImage("/resources/playerRight" + i + ".png", Color.GREEN));
@@ -525,8 +526,9 @@ public class GameManager {
 		}
 	}
 	public void gameOver() {
-		System.out.println("Game over");
-		System.out.println(MainFrame.user.getUsername());
+		//System.out.println(MainFrame.user.getUsername());
+		timeBonus = countdown * 10;
+		totalScore += (score + timeBonus);
 		isGameOver = true;
 		gamePanel.repaint();
 		MainFrame.user.saveScore(totalScore);
@@ -585,6 +587,16 @@ public class GameManager {
 	}
 	public void setGameOver(boolean isGameOver) {
 		this.isGameOver = isGameOver;
+	}
+	public Image getArrowImage() {
+		switch (arrowType) {
+		case "fixed":
+			return fixedArrowImage;
+		case "double":
+			return doubleArrowImage;
+		default:
+			return black;
+		}
 	}
 	
 }
