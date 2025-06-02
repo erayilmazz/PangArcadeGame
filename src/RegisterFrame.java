@@ -35,8 +35,10 @@ public class RegisterFrame extends JFrame{
 	private JButton helpButton;
 	public RegisterFrame(){
 		super("Register");
-		setUndecorated(true);
-		getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setSize(400, 200);
+		setVisible(true);
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));

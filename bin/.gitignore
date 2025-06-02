@@ -1,6 +1,11 @@
-/Block.class
-/resources/
-/datas/
-/HistoryFrame.class
-/HighScoreFrame.class
 /AboutFrame.class
+/HighScoreFrame.class
+/HistoryFrame.class
+/datas/
+/resources/
+/ResourceManager.class
+/LevelManager.class
+/CollisionManager.class
+/CollisionManager$CollisionManager.class
+/ObjectManager.class
+/GameStateManager.class

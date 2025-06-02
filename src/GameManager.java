@@ -11,59 +11,48 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
-
-
-
 public class GameManager {
-	public Image border,antalya,ankara,izmir,istanbul,playerImage,shootPlayerImage,emptyImage,healthImage,dynamiteImage,clockImage,fixedArrowImage,doubleArrowImage,black;
-	public BufferedImage arrow0Image;
-	public List<Image> leftImages = new ArrayList<>();
-	public List<Image> rightImages = new ArrayList<>();
-	public List<Image> smallBallImages = new ArrayList<>();
-	public List<Image> mediumBallImages = new ArrayList<>();
-	public List<Image> largeBallImages = new ArrayList<>();
-	public List<Image> extraLargeImages = new ArrayList<>();
-	public List<Image> arrowImages = new ArrayList<>();
-	public List<Image> blockx = new ArrayList<>();
-	public List<Image> blocky = new ArrayList<>();
-	private int score = 0;
+	protected int score = 0;
 	private int totalScore = 0;
 	private int timeBonus = 0;
-	private int currentImageIndex = 0;
-	private ImageLoader id = new ImageLoader();
+	public int currentImageIndex = 0;
 	Player player;
 	private LinkedList<Ball> balls;
 	private LinkedList<Arrow> arrows;
-	private String arrowType = "normal";
-	private LinkedList<FallingObject> fallingObjects;
-	private List<String> fallingObjectsList = Arrays.asList("health","dynamite","clock","fixedArrow","doubleArrow");
+	protected String arrowType = "normal";
+	protected LinkedList<FallingObject> fallingObjects;
+	protected List<String> fallingObjectsList = Arrays.asList("health","dynamite","clock","fixedArrow","doubleArrow");
 	private LinkedList<Block> blocks;
 	public String diff;
 	public boolean isGamePaused = true;
 	private Timer gameTimer;
-	private int countdown = 98;
-	private int invisibleTime;
-	private int freezeTime;
-	private boolean isFreeze = false;
-	private int arrowTime;
+	protected int countdown = 98;
+	protected int invisibleTime;
+	protected int freezeTime;
+	protected boolean isFreeze = false;
+	protected int arrowTime;
 	private int currentLevel;
 	private boolean isScoreScreen = false;
 	private boolean isGameOver = false;
 	private GamePanel gamePanel;
 	private SubPanel subPanel;
+	private ResourceManager resourceManager;
+	private CollisionManager collisionManager;
 	public GameManager(String diff){
 		balls = new LinkedList <>();
 		arrows = new LinkedList <>();
 		fallingObjects = new LinkedList <>();
 		blocks = new LinkedList <>();
 		setDiff(diff);
+		resourceManager = new ResourceManager();
+		collisionManager = new CollisionManager(this);
+		resourceManager.loadResources();
 		//loadResources();
 		//loadLevel(1);
 		//startGameLoop();
 		
 	}
 	public void startGame() {
-		loadResources();
 		setGamePanel(gamePanel);
 		gameTimer = new Timer(1000, e -> {
 			countdown--;
@@ -108,7 +97,7 @@ public class GameManager {
 									ball.setCollisionBlock(true);
 									if(ball.isFirstCollisionBlock) {
 										//System.out.println("değdi");
-										resolveCollision(block,ball);
+										collisionManager.resolveCollision(block,ball);
 										ball.isFirstCollisionBlock = false;
 									}
 									break;
@@ -139,10 +128,10 @@ public class GameManager {
 							it.remove();
 						}
 					}
-					checkPlayerBallCollision();
-					checkArrowBallCollision();
-					checkPlayerItemCollision();
-					checkArrowBlockCollision();
+					collisionManager.checkPlayerBallCollision(player, balls);
+					collisionManager.checkArrowBallCollision(arrows, balls);
+					collisionManager.checkPlayerItemCollision(player, fallingObjects);
+					collisionManager.checkArrowBlockCollision(arrows, blocks);
 					updateAnimation();
 					if(player.isInvisible() == true) checkInvisible();
 					if(balls.isEmpty()) {
@@ -166,33 +155,7 @@ public class GameManager {
 			}
 		}).start();
 	}
-	private void loadResources() {
-		border = id.loadImage("/resources/border.png",Color.WHITE);
-		antalya = id.loadImage("/resources/antalya.png");
-		ankara = id.loadImage("/resources/ankara.png");
-		izmir = id.loadImage("/resources/izmir.png");
-		istanbul = id.loadImage("/resources/istanbul.png");
-		playerImage = id.loadImage("/resources/player.png",Color.GREEN);
-		arrow0Image = id.loadBufferedImage("/resources/arrow.png",Color.RED);
-		shootPlayerImage = id.loadImage("/resources/playerShoot.png",Color.green);
-		emptyImage = id.loadImage("/resources/empty.png",Color.white);
-		healthImage = id.loadImage("/resources/health.png",Color.GREEN);
-		dynamiteImage = id.loadImage("/resources/dynamite.png",Color.GREEN);
-		clockImage = id.loadImage("/resources/clock.png",Color.GREEN);
-		fixedArrowImage = id.loadImage("/resources/fixedArrow.png",Color.GREEN);
-		doubleArrowImage = id.loadImage("/resources/doubleArrow.png",Color.GREEN);
-		black = id.loadImage("/resources/black.png");
-		for(int i = 0; i <= 4; i++) {
-			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.green));
-			rightImages.add(id.loadImage("/resources/playerRight" + i + ".png", Color.GREEN));
-			smallBallImages.add(id.loadImage("/resources/small" + i + ".png",Color.GREEN));
-			mediumBallImages.add(id.loadImage("/resources/Medium" + i + ".png",Color.GREEN));
-			largeBallImages.add(id.loadImage("/resources/Large" + i + ".png",Color.GREEN));
-			extraLargeImages.add(id.loadImage("/resources/ExtraLarge" + i + ".png",Color.GREEN));
-			blockx.add(id.loadImage("/resources/blockx" + i + ".png"));
-			blocky.add(id.loadImage("/resources/blocky" + i + ".png"));
-		}
-	}
+	
 	public void updateAnimation() {
 		currentImageIndex++;
 		if(currentImageIndex == 50) currentImageIndex = 0;
@@ -289,96 +252,11 @@ public class GameManager {
 		}
 	}
 	
-	private void checkPlayerBallCollision() {
-		if(!player.isInvisible()) {
-			for(Ball ball : balls) {
-				//System.out.println(ball.getBounds().getX());
-				if(ball.getCircleBounds().intersects(player.getBounds())) {
-					//System.out.println("Game over");
-					player.decreaseHealthBar();
-					if(player.getHealthBar() <= 0) {
-						gameOver();
-						break;
-					}
-					player.setInvisible(true);
-					invisibleTime = countdown - 3;
-				}
-			}
-		}
-	}
+	
 	private void checkInvisible() {
 		if(countdown == invisibleTime) player.setInvisible(false);
 	}
-	private void checkArrowBallCollision() {
-		for(Arrow arrow : arrows) {
-			synchronized (balls) {
-				for(Ball ball : balls) {
-					//System.out.println(ball.getBounds().getX());
-					if(ball.getCircleBounds().intersects(arrow.getBounds())) {
-						if(ball instanceof SmallBall) score += 200;
-						if(ball instanceof MediumBall) score += 150;
-						if(ball instanceof LargeBall) score += 100;
-						if(ball instanceof ExtraLargeBall) score += 50;
-						ball.setExploded(true);
-						arrows.remove(arrow);
-						Random rand = new Random();
-						String randomItem = fallingObjectsList.get(rand.nextInt(fallingObjectsList.size()));
-						fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),24,24,randomItem));
-						
-					}
-				}
-			}
-		}
-	}
-	private void checkPlayerItemCollision() {
-		Iterator<FallingObject> it = fallingObjects.iterator();
-		while(it.hasNext()) {
-			FallingObject object = it.next();
-			if(object.getBounds().intersects(player.getBounds())) {
-				//"health","dynamite","clock","fixedArrow","doubleArrow"
-				switch(object.getObject()) {
-				case "health" : 
-					player.increaseHealthBar();
-					break;
-				case "dynamite":
-					for(Ball ball : balls) {
-						if(!(ball instanceof SmallBall)) {
-							ball.setExploded(true);
-						}
-					}
-					break;
-				case "clock":
-					freezeTime = countdown - 5;
-					System.out.println(freezeTime);
-					isFreeze = true;
-					break;
-				case "fixedArrow":
-					arrowType = "fixed";
-					arrowTime = countdown - 20;
-					break;
-				case "doubleArrow":
-					arrowType = "double";
-					arrowTime = countdown - 20;
-					break;
-				}
-				score += 100;
-				it.remove();
-			}
-		}
-		
-	}
-	private void checkArrowBlockCollision() {
-		Iterator<Arrow> it = arrows.iterator();
-		while(it.hasNext()) {
-			Arrow arrow = it.next();
-			for(Block block:blocks) {
-				if(block.getBounds().intersects(arrow.getBounds())) {
-					block.setDestroyed(true);
-					it.remove();
-				}
-			}
-		}
-	}
+	
 	/*
 	private void checkBallBlockCollision() {
 		for(Ball ball : balls) {
@@ -394,23 +272,7 @@ public class GameManager {
 		}
 	}
 	*/
-	public Image getPlayerImage() {
-		if(player.isInvisible() && (currentImageIndex%5) == 0) {
-			return emptyImage;
-		}
-		if(player.getDirection().equals("left")) {
-			return leftImages.get(currentImageIndex/10);
-		}
-		else if (player.getDirection().equals("right")) {
-			return rightImages.get(currentImageIndex/10);
-		}else if(player.getDirection().equals("shoot")) {
-			return shootPlayerImage;
-		}
-		else {
-			return playerImage;
-		}
-		
-	}
+	
 	private void handleExplotion() {
 		List<Ball> toAdd = new LinkedList<>();
 		Iterator<Ball> iterator = balls.iterator();
@@ -448,83 +310,8 @@ public class GameManager {
 			balls.addAll(toAdd);  
 		} 
 	}
-	public void resolveCollision(Block block, Ball ball) {
-		Rectangle blockRight = new Rectangle(block.getX()+block.getWidth(),block.getY(),1,block.getHeight());
-		Rectangle blockLeft = new Rectangle(block.getX(),block.getY(),1,block.getHeight());
-		Rectangle blockTop = new Rectangle(block.getX(),block.getY(),block.getWidth(),1);
-		Rectangle blockBottom = new Rectangle(block.getX(),block.getY() + block.getHeight(),block.getWidth(),1);
-		boolean top = ball.getCircleBounds().intersects(blockTop);
-		boolean bottom = ball.getCircleBounds().intersects(blockBottom);
-		boolean left = ball.getCircleBounds().intersects(blockLeft);
-		boolean right = ball.getCircleBounds().intersects(blockRight);
-		if((top) && (left || right)) {
-			if(ball.getVy() > 0) {
-				ball.reverseY();
-			}
-			else ball.reverseX();
-			return;
-		}
-		if((bottom) && (left || right)) {	
-			ball.reverseY();
-			return;
-		}
-		if(top || bottom) {
-			ball.reverseY();
-		}
-		if(left || right) {
-			ball.reverseX();
-		}
-	}
-	public Image getBallImage(Ball ball) {
-		int indexNum = ball.explodeImageIndex;
-		if(ball instanceof SmallBall && !ball.isExploded()) return smallBallImages.get(0);
-		else if(ball instanceof SmallBall && ball.isExploded()){
-			return smallBallImages.get(indexNum/2);
-		}
-		if(ball instanceof MediumBall && !ball.isExploded()) return mediumBallImages.get(0);
-		else if(ball instanceof MediumBall && ball.isExploded()){
-			return mediumBallImages.get(indexNum/2);
-		}
-		if(ball instanceof LargeBall && !ball.isExploded()) return largeBallImages.get(0);
-		else if(ball instanceof LargeBall && ball.isExploded()){
-			return largeBallImages.get(indexNum/2);
-		}
-		if(ball instanceof ExtraLargeBall && !ball.isExploded()) return extraLargeImages.get(0);
-		else if(ball instanceof ExtraLargeBall && ball.isExploded()){
-			return extraLargeImages.get(indexNum/2);
-		}
-		return null;
-	}
-	public BufferedImage getArrowImage(Arrow arrow) {
-		BufferedImage croppedImage = arrow0Image.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
-		return croppedImage;
-	}
-	public Image getFallingObjectsImage(FallingObject object) {
-		if(object.getObject() == "health") return healthImage;
-		else if(object.getObject() == "dynamite") return dynamiteImage;
-		else if(object.getObject() == "clock") return clockImage;
-		else if(object.getObject() == "doubleArrow") return doubleArrowImage;
-		else if(object.getObject() == "fixedArrow") return fixedArrowImage;
-		return emptyImage;
-	}
-	public Image getBlockImage(Block block) {
-		if(block.getType() == 'x') return blockx.get(block.destroyImageIndex/5);
-		else return blocky.get(block.destroyImageIndex/5);
-	}
-	public Image getLevelImage() {
-		switch(currentLevel) {
-		case 1:
-			return antalya;
-		case 2:
-			return ankara;
-		case 3:
-			return izmir;
-		case 4:
-			return istanbul;
-		default:
-			return emptyImage;
-		}
-	}
+	
+	
 	public void gameOver() {
 		//System.out.println(MainFrame.user.getUsername());
 		timeBonus = countdown * 10;
@@ -588,15 +375,9 @@ public class GameManager {
 	public void setGameOver(boolean isGameOver) {
 		this.isGameOver = isGameOver;
 	}
-	public Image getArrowImage() {
-		switch (arrowType) {
-		case "fixed":
-			return fixedArrowImage;
-		case "double":
-			return doubleArrowImage;
-		default:
-			return black;
-		}
+	public String getArrowType() {
+		return arrowType;
 	}
+	
 	
 }

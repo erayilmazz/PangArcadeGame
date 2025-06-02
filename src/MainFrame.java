@@ -2,14 +2,18 @@ import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -26,16 +30,25 @@ public class MainFrame extends JFrame implements KeyListener{
 	GamePanel gamePanel;
 	SubPanel subPanel;
 	public static User user;
-	
+	JLabel label;
+	MenuBarHandler handler;
 	//SubPanel subPanel = new SubPanel();
 	public MainFrame() {
 		super("Pang");
 		setLayout(new BorderLayout());
+		handler = new MenuBarHandler();
+		ImageLoader id = new ImageLoader();
+		Image pang = id.loadImage("/resources/pang.png",Color.WHITE);
+		ImageIcon icon = new ImageIcon(pang);
+		label = new JLabel(icon);
+		add(label, BorderLayout.CENTER);
+		createInvisibleButtons();
 		createMenuBar();
 		addKeyListener(this);
-		
+		setFocusable(true);
+		requestFocusInWindow();
 	}
-	
+	JButton startGameButton, loginButton, registerButton, noviceButton, intermediateButton, advancedButton;
 	private JMenuBar menuBar;
 	private JMenu gameMenu;
 	private JMenu optionsMenu;
@@ -71,8 +84,7 @@ public class MainFrame extends JFrame implements KeyListener{
 		aboutItem = new JMenuItem("About");
 		
 		
-		
-		MenuBarHandler handler = new MenuBarHandler();
+	
 		newItem.addActionListener(handler);
 		loginItem.addActionListener(handler);
 		registerItem.addActionListener(handler);
@@ -101,21 +113,69 @@ public class MainFrame extends JFrame implements KeyListener{
 		menuBar.add(helpMenu);	
 		setJMenuBar(menuBar);
 	}
+	private void createInvisibleButtons() {
+		label.setLayout(null);
+		
+		loginButton = new JButton();
+		loginButton.setBounds(300, 250, 180, 30);
+		loginButton.addActionListener(handler);
+		makeInvisible(loginButton);
+		label.add(loginButton);
+		
+		registerButton = new JButton();
+		registerButton.setBounds(270, 305, 230, 30);
+		registerButton.addActionListener(handler);
+		makeInvisible(registerButton);
+		label.add(registerButton);
+		
+		noviceButton = new JButton();
+		noviceButton.setBounds(100, 405, 130, 30);
+		noviceButton.addActionListener(handler);
+		makeInvisible(noviceButton);
+		label.add(noviceButton);
+		
+		intermediateButton = new JButton();
+		intermediateButton.setBounds(255, 405, 230, 30);
+		intermediateButton.addActionListener(handler);
+		makeInvisible(intermediateButton);
+		label.add(intermediateButton);
+		
+		advancedButton = new JButton();
+		advancedButton.setBounds(510, 405, 170, 30);
+		advancedButton.addActionListener(handler);
+		makeInvisible(advancedButton);
+		label.add(advancedButton);
+		
+		startGameButton = new JButton();
+		startGameButton.setBounds(230, 465, 300, 30);
+		startGameButton.addActionListener(handler);
+		makeInvisible(startGameButton);
+		label.add(startGameButton);
+	}
+	private void makeInvisible(JButton button) {
+		button.setOpaque(false);
+		button.setContentAreaFilled(false);
+		button.setBorderPainted(false);
+		button.setFocusPainted(false);
+		button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	}
 	private class MenuBarHandler implements ActionListener{
 		public void actionPerformed(ActionEvent event) {
-			if(event.getSource() == newItem) {
+			if(event.getSource() == newItem || event.getSource() == startGameButton) {
 				if(gameActive) {
 					remove(gamePanel);
 					remove(subPanel);
 					gameActive = false;
 				}
 				if(!accountActive) {
-					JOptionPane.showMessageDialog(null, "Please log in","Error",JOptionPane.INFORMATION_MESSAGE);
+					int ok = JOptionPane.showConfirmDialog(null, "Please log in","Error",JOptionPane.DEFAULT_OPTION);
+					if(ok == JOptionPane.OK_OPTION) new LoginFrame();
 				}
 				else if (!diffSelected) {
 					JOptionPane.showMessageDialog(null, "Please choose diff","Error",JOptionPane.INFORMATION_MESSAGE);
 				}
 				else if(accountActive && diffSelected) {
+					remove(label);
 					gm = new GameManager(diff);
 					gamePanel = new GamePanel(gm);
 					subPanel = new SubPanel(gm);
@@ -128,58 +188,52 @@ public class MainFrame extends JFrame implements KeyListener{
 					revalidate();
 					repaint();
 					gameActive = true;
+					gamePanel.setFocusable(true);
+					gamePanel.requestFocusInWindow();
+					gamePanel.addKeyListener(MainFrame.this);
 				}
 			}
-			else if(event.getSource() == loginItem) {
-				LoginFrame loginFrame = new LoginFrame();
-				loginFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				loginFrame.setSize(400, 200);
-				loginFrame.setVisible(true);
+			else if(event.getSource() == loginItem || event.getSource() == loginButton) {
+				new LoginFrame();
 			}
-			else if(event.getSource() == registerItem) {
-				RegisterFrame registerFrame = new RegisterFrame();
-				registerFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				registerFrame.setSize(400, 200);
-				registerFrame.setVisible(true);
+			else if(event.getSource() == registerItem || event.getSource() == registerButton) {
+				new RegisterFrame();
 			}
 			else if(event.getSource() == quitItem) {
 				System.exit(0);
 			}
-			else if(event.getSource() == noviceItem) {
+			else if(event.getSource() == noviceItem || event.getSource() == noviceButton) {
 				diff = "novice";
 				diffSelected = true;	
 			}
-			else if(event.getSource() == intermediateItem) {
+			else if(event.getSource() == intermediateItem || event.getSource() == intermediateButton) {
 				diff = "intermediate";
 				diffSelected = true;	
 			}
-			else if(event.getSource() == advancedItem) {
+			else if(event.getSource() == advancedItem || event.getSource() == advancedButton) {
 				diff = "advanced";
 				diffSelected = true;	
 			}
 			else if(event.getSource() == historyItem) {
-				HistoryFrame historyFrame = new HistoryFrame(user);
-				historyFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				historyFrame.setSize(400, 200);
-				historyFrame.setVisible(true);
+				if(!accountActive) {
+					int ok = JOptionPane.showConfirmDialog(null, "Please log in","Error",JOptionPane.DEFAULT_OPTION);
+					if(ok == JOptionPane.OK_OPTION) new LoginFrame();
+				}else {
+					new HistoryFrame(user);
+				}
+				
 			}
 			else if(event.getSource() == scoresItem) {
-				HighScoreFrame highScore = new HighScoreFrame();
-				highScore.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				highScore.setSize(400, 200);
-				highScore.setVisible(true);
+				new HighScoreFrame();
 			}
 			else if(event.getSource() == aboutItem) {
-				AboutFrame aboutFrame = new AboutFrame();
-				aboutFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-				aboutFrame.setSize(400, 200);
-				aboutFrame.setVisible(true);
+				new AboutFrame();
 			}
 		}
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(!gm.isGamePaused) {
+		if(gm !=null && !gm.isGamePaused && gameActive) {
 			int key = e.getKeyCode();
 			if (key == KeyEvent.VK_LEFT) {
 				gm.player.setDirection("left");
@@ -195,7 +249,7 @@ public class MainFrame extends JFrame implements KeyListener{
 	}
 	@Override
     public void keyReleased(KeyEvent e) {
-        gm.player.setDirection("none");
+		if(gameActive && gm !=null && !gm.isGamePaused ) gm.player.setDirection("none");
     }
 
     @Override

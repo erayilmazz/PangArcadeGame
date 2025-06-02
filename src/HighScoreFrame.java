@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +17,11 @@ public class HighScoreFrame extends JFrame{
 	JLabel infoText;
 	HighScoreFrame(){
 		super("High Scores");
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setSize(400, 200);
+		setVisible(true);
 		setLayout(new GridLayout(10,1));
-	
+		getContentPane().setBackground(Color.BLACK);
 		File file = new File("src/datas/history.csv");
 		List<Map.Entry<String,Double>> entries = new ArrayList<>();
 		try(Scanner scanner = new Scanner(file)){
@@ -35,6 +40,8 @@ public class HighScoreFrame extends JFrame{
 		for (int i = 0; i < count; i++) {
 			Map.Entry<String, Double> entry = entries.get(i);
 			JLabel label = new JLabel(i+1 + ". " + entry.getKey() + " => " + entry.getValue());
+			label.setFont(new Font("Monospaced",Font.BOLD,16));
+            label.setForeground(Color.WHITE);
 			add(label);
         }
 		
