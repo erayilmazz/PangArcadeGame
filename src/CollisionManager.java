@@ -6,8 +6,10 @@ import java.util.Random;
 
 public class CollisionManager{
 	private GameManager gm;
-	public CollisionManager(GameManager gm){
+	private SoundManager sm;
+	public CollisionManager(GameManager gm,  SoundManager sm){
 		this.gm = gm;
+		this.sm = sm;
 	}
 	public void checkPlayerBallCollision(Player player, LinkedList<Ball> balls) {
 		if(!player.isInvisible()) {
@@ -32,6 +34,7 @@ public class CollisionManager{
 				for(Ball ball : balls) {
 					//System.out.println(ball.getBounds().getX());
 					if(ball.getCircleBounds().intersects(arrow.getBounds())) {
+						sm.playSound(sm.ballonExplode);
 						if(ball instanceof SmallBall) gm.score += 200;
 						if(ball instanceof MediumBall) gm.score += 150;
 						if(ball instanceof LargeBall) gm.score += 100;
@@ -53,7 +56,7 @@ public class CollisionManager{
 		while(it.hasNext()) {
 			FallingObject object = it.next();
 			if(object.getBounds().intersects(player.getBounds())) {
-				//"health","dynamite","clock","fixedArrow","doubleArrow"
+				sm.playSound(sm.itemCollected);
 				switch(object.getObject()) {
 				case "health" : 
 					player.increaseHealthBar();
@@ -91,8 +94,10 @@ public class CollisionManager{
 			Arrow arrow = it.next();
 			for(Block block:blocks) {
 				if(block.getBounds().intersects(arrow.getBounds())) {
+					sm.playSound(sm.breakGlass);
 					block.setDestroyed(true);
 					it.remove();
+					return;
 				}
 			}
 		}
@@ -106,15 +111,35 @@ public class CollisionManager{
 		boolean bottom = ball.getCircleBounds().intersects(blockBottom);
 		boolean left = ball.getCircleBounds().intersects(blockLeft);
 		boolean right = ball.getCircleBounds().intersects(blockRight);
-		if((top) && (left || right)) {
-			if(ball.getVy() > 0) {
-				ball.reverseY();
-			}
+		if(top) System.out.println("top");
+		if(bottom) System.out.println("bottom");
+		if(left) System.out.println("left");
+		if(right) System.out.println("right");
+		System.out.println("-----------------------------");
+		if((top && bottom && left) || (top && bottom && right)) {
+			ball.reverseX();
+			return;
+		}
+		if((right && bottom && left)) {
+			ball.reverseY();
+			return;
+		}
+		if((bottom) && (left || right) && block.getType() == 'y') {
+			if(ball.getVy() < 0) ball.reverseY();
 			else ball.reverseX();
 			return;
 		}
-		if((bottom) && (left || right)) {	
+		if((top) && (left || right) && block.getType() == 'y') {
+			ball.reverseX();
+			return;
+		}
+		if((top) && (left || right)) {
 			ball.reverseY();
+			return;
+		}
+		if((bottom || top) && (left || right)) {
+			if(ball.getVy() < 0) ball.reverseY();
+			else ball.reverseX();
 			return;
 		}
 		if(top || bottom) {

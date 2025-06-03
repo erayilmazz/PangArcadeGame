@@ -11,7 +11,6 @@ public class Ball extends GameObject{
 	public int explodeImageIndex;
 	private boolean firstMove = true;
 	protected boolean isCollisionBlock = false;
-	public boolean isFirstCollisionBlock = false;
 	public Ball(int x, int y, int width, int height){
 		super(x,y,width,height);
 		isExploded = false;
@@ -47,9 +46,6 @@ public class Ball extends GameObject{
 		return isCollisionBlock;
 	}
 	public void setCollisionBlock(boolean isCollisionBlock) {
-		if(isCollisionBlock() == false && isCollisionBlock == true) {
-			isFirstCollisionBlock = true;
-		}
 		this.isCollisionBlock = isCollisionBlock;
 	}
 	public int getX() {return  x;}
@@ -62,6 +58,7 @@ public class Ball extends GameObject{
 	public double getVy() {
 		return vy;
 	}
+	
 	
 	
 }

@@ -63,6 +63,8 @@ public class GamePanel extends JPanel{
 		if(gm.getBlocks() != null) {
 			for(Block block : gm.getBlocks()) {
 				g.drawImage(resourceManager.getBlockImage(block),block.getX(), block.getY(),null);
+				//Rectangle ballLeft = new Rectangle(block.getX(),block.getY(),block.getWidth(),block.getHeight());
+				//g.fillRect(ballLeft.x, ballLeft.y, ballLeft.width, ballLeft.height);
 			}
 		}
 		g.setFont(new Font("Arial", Font.BOLD, 20));

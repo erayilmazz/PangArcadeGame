@@ -32,10 +32,12 @@ public class MainFrame extends JFrame implements KeyListener{
 	public static User user;
 	JLabel label;
 	MenuBarHandler handler;
-	//SubPanel subPanel = new SubPanel();
+	SoundManager sm;
 	public MainFrame() {
 		super("Pang");
 		setLayout(new BorderLayout());
+		sm = new SoundManager();
+		sm.playMusic(sm.selectScreen);
 		handler = new MenuBarHandler();
 		ImageLoader id = new ImageLoader();
 		Image pang = id.loadImage("/resources/pang.png",Color.WHITE);
@@ -175,6 +177,12 @@ public class MainFrame extends JFrame implements KeyListener{
 					JOptionPane.showMessageDialog(null, "Please choose diff","Error",JOptionPane.INFORMATION_MESSAGE);
 				}
 				else if(accountActive && diffSelected) {
+					try {
+						gm.setGameOver(true);
+						gm.getSoundManager().stopMusic();
+						
+					}catch(Exception e) {}
+					sm.stopMusic();
 					remove(label);
 					gm = new GameManager(diff);
 					gamePanel = new GamePanel(gm);

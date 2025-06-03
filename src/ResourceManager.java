@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ResourceManager {
 	public Image border,antalya,ankara,izmir,istanbul,playerImage,shootPlayerImage,emptyImage,healthImage,dynamiteImage,clockImage,fixedArrowImage,doubleArrowImage,black;
-	public BufferedImage arrow0Image;
+	public BufferedImage arrow0Image, arrowfImage;
 	public List<Image> leftImages = new ArrayList<>();
 	public List<Image> rightImages = new ArrayList<>();
 	public List<Image> smallBallImages = new ArrayList<>();
@@ -33,6 +33,7 @@ public class ResourceManager {
 		fixedArrowImage = id.loadImage("/resources/fixedArrow.png",Color.GREEN);
 		doubleArrowImage = id.loadImage("/resources/doubleArrow.png",Color.GREEN);
 		black = id.loadImage("/resources/black.png");
+		arrowfImage = id.loadBufferedImage("/resources/arrowf.png",Color.GREEN);
 		for(int i = 0; i <= 4; i++) {
 			leftImages.add(id.loadImage("/resources/playerLeft" + i + ".png", Color.green));
 			rightImages.add(id.loadImage("/resources/playerRight" + i + ".png", Color.GREEN));
@@ -81,8 +82,12 @@ public class ResourceManager {
 		return null;
 	}
 	public BufferedImage getArrowImage(Arrow arrow) {
-		if(arrow.getWidth() <= 0 || arrow.getHeight() < 0) return null;
-		BufferedImage croppedImage = arrow0Image.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
+		if(arrow.getWidth() <= 0 || arrow.getHeight() <= 0) return null;
+		BufferedImage croppedImage = null;
+		if(arrow.getType() == "normal" || arrow.getType() == "double")
+			croppedImage = arrow0Image.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
+		else if(arrow.getType() == "fixed")
+			croppedImage = arrowfImage.getSubimage(0,0,arrow.getWidth(),arrow.getHeight());
 		return croppedImage;
 	}
 	public Image getFallingObjectsImage(FallingObject object) {

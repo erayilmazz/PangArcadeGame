@@ -15,11 +15,6 @@ public class MediumBall extends Ball{
 	}
 	@Override
 	public void move() {
-		if(isFirstCollisionBlock) {
-			reverseX();
-			reverseY();
-			isFirstCollisionBlock = false;
-		}
 		move++;
 		if(firstMove) {
 			vy = 0;
