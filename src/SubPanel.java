@@ -14,8 +14,11 @@ public class SubPanel extends JPanel{
 	JLabel usernameLabel;
 	JLabel highscoreLabel;
 	JPanel healthPanel;
+	private ResourceManager resourceManager;
 	public SubPanel(GameManager gm) {
 		this.gm = gm;
+		resourceManager = new ResourceManager();
+		resourceManager.loadResources();
 		setLayout(new GridLayout(2,3,6,6));
 		setBackground(Color.BLACK);
 		levelLabel = new JLabel("sa");
@@ -37,13 +40,12 @@ public class SubPanel extends JPanel{
 		levelLabel.setText("" + gm.getCurrentLevel());
 		scoreLabel.setText("" + gm.getTotalScore() + gm.getScore());
 		diffLabel.setText(gm.getDiff());
-		usernameLabel.setText(MainFrame.user.getUsername());
-		
+		usernameLabel.setText(MainFrame.user.getUsername());	
 		healthPanel.removeAll();
-		ImageIcon arrowIcon = new ImageIcon(gm.getArrowImage());
+		ImageIcon arrowIcon = new ImageIcon(resourceManager.getArrowImage(gm.getArrowType()));
 		JLabel arrowLabel = new JLabel(arrowIcon);
 		healthPanel.add(arrowLabel);
-		ImageIcon healthIcon = new ImageIcon(gm.healthImage);
+		ImageIcon healthIcon = new ImageIcon(resourceManager.healthImage);
 		for(int i = 0; i < gm.player.getHealthBar(); i++) {
 			if(i == 6) {
 				JLabel plus = new JLabel("+");

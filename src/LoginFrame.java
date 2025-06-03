@@ -31,8 +31,11 @@ public class LoginFrame extends JFrame{
 	private JButton helpButton;
 	public LoginFrame(){
 		super("Login");
-		setUndecorated(true);
-		getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setSize(400, 200);
+		setVisible(true);
+		
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -94,7 +97,8 @@ public class LoginFrame extends JFrame{
 					else {
 						MainFrame.accountActive = true;
 						MainFrame.user = new User(nameText);
-						JOptionPane.showMessageDialog(null, "Starting...");
+						int ok = JOptionPane.showConfirmDialog(null, "Logged in","",JOptionPane.DEFAULT_OPTION);
+						if(ok == JOptionPane.OK_OPTION) dispose();
 					}
 					
 				}

@@ -8,9 +8,12 @@ import javax.swing.Timer;
 
 public class GamePanel extends JPanel{
 	private GameManager gm;
+	private ResourceManager resourceManager;
 	//Ball ball = new Ball(350,338);
 	public GamePanel(GameManager gm) {
 		this.gm = gm;
+		resourceManager = new ResourceManager();
+		resourceManager.loadResources();
 	}
 	
 	@Override
@@ -37,29 +40,31 @@ public class GamePanel extends JPanel{
 		}
         Rectangle r = gm.player.getBounds();
         g.fillRect(r.x, r.y, r.width, r.height);
-        g.drawImage(gm.getLevelImage(),0,0,null);
-		g.drawImage(gm.border, 0, 0, null);
-		g.drawImage(gm.getPlayerImage(), gm.player.getX(), gm.player.getY(), null);
+        g.drawImage(resourceManager.getLevelImage(gm.getCurrentLevel()),0,0,null);
+		g.drawImage(resourceManager.border, 0, 0, null);
+		g.drawImage(resourceManager.getPlayerImage(gm.player,gm.currentImageIndex), gm.player.getX(), gm.player.getY(), null);
 		synchronized (gm.getBalls()) {
 			for(Ball ball : gm.getBalls()) {
-				g.drawImage(gm.getBallImage(ball), ball.getX(), ball.getY(), null);
+				g.drawImage(resourceManager.getBallImage(ball), ball.getX(), ball.getY(), null);
 				//Rectangle ballLeft = new Rectangle(ball.getX()+ball.getWidth()-1,ball.getY(),10,ball.getHeight());
 				//g.fillRect(ballLeft.x, ballLeft.y, ballLeft.width, ballLeft.height);
 			}
 		}
 		if(gm.getArrows() != null) {
 			for(Arrow arrow : gm.getArrows()) {
-				g.drawImage(gm.getArrowImage(arrow), arrow.getX(), arrow.getDrawY(), arrow.getWidth(), arrow.getHeight(), null);
+				g.drawImage(resourceManager.getArrowImage(arrow), arrow.getX(), arrow.getDrawY(), arrow.getWidth(), arrow.getHeight(), null);
 			}
 		}
 		if(gm.getFallingObjects() != null) {
 			for(FallingObject object : gm.getFallingObjects()) {
-				g.drawImage(gm.getFallingObjectsImage(object),object.getX(), object.getY(),null);
+				g.drawImage(resourceManager.getFallingObjectsImage(object),object.getX(), object.getY(),null);
 			}
 		}
 		if(gm.getBlocks() != null) {
 			for(Block block : gm.getBlocks()) {
-				g.drawImage(gm.getBlockImage(block),block.getX(), block.getY(),null);
+				g.drawImage(resourceManager.getBlockImage(block),block.getX(), block.getY(),null);
+				//Rectangle ballLeft = new Rectangle(block.getX(),block.getY(),block.getWidth(),block.getHeight());
+				//g.fillRect(ballLeft.x, ballLeft.y, ballLeft.width, ballLeft.height);
 			}
 		}
 		g.setFont(new Font("Arial", Font.BOLD, 20));
