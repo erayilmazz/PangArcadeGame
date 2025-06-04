@@ -24,18 +24,18 @@ public class GamePanel extends JPanel{
 			g.fillRect(0,0,getWidth(),getHeight());
 			g.setColor(Color.WHITE);
 			g.setFont(new Font("Monospaced", Font.BOLD, 24));
-			g.drawString("SCORE: " + gm.getScore(),300, 150);
-			g.drawString("TIME BONUS: "+ gm.getTimeBonus(),300,200);
-			g.drawString("TOTAL SCORE: "+ gm.getTotalScore(),300,250);
+			g.drawString("LEVEL SCORE: " + gm.getScore(),280, 200);
+			g.drawString("TIME BONUS: "+ gm.getTimeBonus(),280,250);
+			g.drawString("TOTAL SCORE: "+ gm.getTotalScore(),280,300);
 			return;
 		}
 		if(gm.isGameOver()) {
 			g.fillRect(0,0,getWidth(),getHeight());
 			g.setColor(Color.WHITE);
-			g.setFont(new Font("Monospaced", Font.BOLD, 24));
-			g.drawString("GAME OVER",300, 150);
-			//g.drawString("SCORE: "+ gm.getTimeBonus(),300,200);
-			g.drawString("SCORE: "+ gm.getTotalScore(),300,250);
+			g.setFont(new Font("Monospaced", Font.BOLD, 48));
+			g.drawString("GAME OVER",230, 150);
+			g.drawString(gm.getGameOverReason(),230,250);
+			g.drawString("SCORE: "+ gm.getTotalScore(),230,350);
 			return;
 		}
         Rectangle r = gm.player.getBounds();

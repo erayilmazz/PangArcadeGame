@@ -15,11 +15,13 @@ import javax.swing.JLabel;
 
 public class HighScoreFrame extends JFrame{
 	JLabel infoText;
-	HighScoreFrame(){
+	public HighScoreFrame(){
 		super("High Scores");
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(400, 200);
 		setVisible(true);
+		setResizable(false);
+		setLocationRelativeTo(null);
 		setLayout(new GridLayout(10,1));
 		getContentPane().setBackground(Color.BLACK);
 		File file = new File("src/datas/history.csv");
@@ -43,8 +45,21 @@ public class HighScoreFrame extends JFrame{
 			label.setFont(new Font("Monospaced",Font.BOLD,16));
             label.setForeground(Color.WHITE);
 			add(label);
-        }
-		
+        }	
 	}
-	
+	public static double getHighScore() {
+		File file = new File("src/datas/history.csv");
+		double max = 0;
+		try(Scanner scanner = new Scanner(file)){
+			while(scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				String[] parts = line.split(",");
+				double score = Double.valueOf(parts[3]);
+				if(score > max) max = score;
+			}
+		 }catch (IOException e) {
+		        e.printStackTrace();
+		 }
+		return max;
+	}
 }

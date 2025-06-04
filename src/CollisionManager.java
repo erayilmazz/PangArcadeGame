@@ -19,7 +19,7 @@ public class CollisionManager{
 					//System.out.println("Game over");
 					player.decreaseHealthBar();
 					if(player.getHealthBar() <= 0) {
-						gm.gameOver();
+						gm.gameOver('d');
 						break;
 					}
 					player.setInvisible(true);
@@ -42,8 +42,14 @@ public class CollisionManager{
 						ball.setExploded(true);
 						arrows.remove(arrow);
 						Random rand = new Random();
-						String randomItem = gm.fallingObjectsList.get(rand.nextInt(gm.fallingObjectsList.size()));
-						gm.fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),24,24,randomItem));
+						int random = 0;
+						if(gm.getDiff() == "novice") random = 2;
+						if(gm.getDiff() == "intermediate") random = 3;
+						else random = 4;
+						if(rand.nextInt(random) == 0) {
+							String randomItem = gm.fallingObjectsList.get(rand.nextInt(gm.fallingObjectsList.size()));
+							gm.fallingObjects.add(new FallingObject(ball.getX(),ball.getY(),24,24,randomItem));
+						}
 						
 					}
 				}
@@ -94,6 +100,7 @@ public class CollisionManager{
 			Arrow arrow = it.next();
 			for(Block block:blocks) {
 				if(block.getBounds().intersects(arrow.getBounds())) {
+					gm.score += 200;
 					sm.playSound(sm.breakGlass);
 					block.setDestroyed(true);
 					it.remove();
@@ -111,11 +118,13 @@ public class CollisionManager{
 		boolean bottom = ball.getCircleBounds().intersects(blockBottom);
 		boolean left = ball.getCircleBounds().intersects(blockLeft);
 		boolean right = ball.getCircleBounds().intersects(blockRight);
+		/*
 		if(top) System.out.println("top");
 		if(bottom) System.out.println("bottom");
 		if(left) System.out.println("left");
 		if(right) System.out.println("right");
 		System.out.println("-----------------------------");
+		*/
 		if((top && bottom && left) || (top && bottom && right)) {
 			ball.reverseX();
 			return;

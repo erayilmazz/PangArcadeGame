@@ -17,6 +17,8 @@ public class HistoryFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(500, 300);
 		setVisible(true);
+		setResizable(false);
+		setLocationRelativeTo(null);
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 		panel.setBackground(Color.BLACK);

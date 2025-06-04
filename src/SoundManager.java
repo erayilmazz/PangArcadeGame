@@ -3,6 +3,7 @@ import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 
 public class SoundManager {
@@ -29,6 +30,10 @@ public class SoundManager {
                 AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL);
                 Clip clip = AudioSystem.getClip();
                 clip.open(ais);
+                
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(-5);
+                
                 clip.start();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -41,6 +46,8 @@ public class SoundManager {
             clip = AudioSystem.getClip();
             clip.open(ais);
             clip.start();
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10);
             if(soundURL != bonus) clip.loop(Clip.LOOP_CONTINUOUSLY);
          } catch (Exception e) {
         	 e.printStackTrace();

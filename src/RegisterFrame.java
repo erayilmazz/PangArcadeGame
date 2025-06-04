@@ -39,6 +39,7 @@ public class RegisterFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(400, 200);
 		setVisible(true);
+		setLocationRelativeTo(null);
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -98,9 +99,21 @@ public class RegisterFrame extends JFrame{
 					else {
 						MainFrame.accountActive = true;
 						createUser(nameText,passText);
-						
+						MainFrame.user = new User(nameText);
+						int ok = JOptionPane.showConfirmDialog(null, "Logged in","",JOptionPane.DEFAULT_OPTION);
+						if(ok == JOptionPane.OK_OPTION) dispose();
+						createUser(nameText,passText);
+
 					}
 				}
+			}
+			else if(event.getSource() == helpButton) {
+				int ok = JOptionPane.showConfirmDialog(null, "If you have already registered before, log in","",JOptionPane.DEFAULT_OPTION);
+				if(ok == JOptionPane.OK_OPTION) {
+					new LoginFrame();
+					dispose();
+				}
+				
 			}
 		}
 	}

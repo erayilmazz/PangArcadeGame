@@ -16,7 +16,6 @@
 /ImageLoader$2.class
 /ImageLoader.class
 /LargeBall.class
-/LevelManager.class
 /LoginFrame$ButtonHandler.class
 /LoginFrame.class
 /LoginFrameTest.class
@@ -30,8 +29,11 @@
 /RegisterFrame.class
 /ResourceManager.class
 /SmallBall.class
+/SoundManager.class
 /SubPanel.class
 /User.class
-/datas/
 /resources/
-/SoundManager.class
+/datas/
+/ScorePanel.class
+/GameLoop.class
+/Countdown.class

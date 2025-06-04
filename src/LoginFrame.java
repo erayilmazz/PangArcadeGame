@@ -35,6 +35,7 @@ public class LoginFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(400, 200);
 		setVisible(true);
+		setLocationRelativeTo(null);
 		
 		
 		JPanel mainPanel = new JPanel();
@@ -109,7 +110,12 @@ public class LoginFrame extends JFrame{
 				
 			}
 			else if(event.getSource() == helpButton) {
-				JOptionPane.showMessageDialog(null, "help");
+				int ok = JOptionPane.showConfirmDialog(null, "If you don't have an account, register","",JOptionPane.DEFAULT_OPTION);
+				if(ok == JOptionPane.OK_OPTION) {
+					new RegisterFrame();
+					dispose();
+				}
+				
 			}
 		}
 	}

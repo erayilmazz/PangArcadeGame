@@ -11,6 +11,7 @@ public class AboutFrame extends JFrame{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setSize(400, 200);
 		setVisible(true);
+		setResizable(false);
 		setLayout(new GridLayout(4,1));
 		getContentPane().setBackground(Color.BLACK);
 		String[] lines = {
