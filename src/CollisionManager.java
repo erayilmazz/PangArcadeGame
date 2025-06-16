@@ -118,6 +118,7 @@ public class CollisionManager{
 		boolean bottom = ball.getCircleBounds().intersects(blockBottom);
 		boolean left = ball.getCircleBounds().intersects(blockLeft);
 		boolean right = ball.getCircleBounds().intersects(blockRight);
+		
 		/*
 		if(top) System.out.println("top");
 		if(bottom) System.out.println("bottom");
