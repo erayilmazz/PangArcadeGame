@@ -1,15 +1,20 @@
 Pang Clone 🎮
 A retro-inspired clone of the classic Pang arcade game, built in Java. The game features 4 unique levels and 3 difficulty modes (Novice, Intermediate, Advanced), combining nostalgic gameplay with a modernized structure.
 
-📸 Screenshots
-Main Menu
-<img width="951" height="673" alt="image" src="https://github.com/user-attachments/assets/8781943c-1aac-425b-a6d4-24e74ad656aa" />
-Gameplay (Level 1: Antalya)
-<img width="858" height="663" alt="image" src="https://github.com/user-attachments/assets/1c05eec5-c1a9-4e38-8bc1-789b7db9b82d" />
-Gameplay (Level 4: İstanbul)
-<img width="862" height="605" alt="image" src="https://github.com/user-attachments/assets/27679e25-6380-4243-bb39-21cb6fdcc94d" />
-High Score Screen
-<img width="473" height="239" alt="image" src="https://github.com/user-attachments/assets/6141104a-62d6-4a42-ab20-8c7a3b12cea2" />
+## 📸 Screenshots
+
+**Main Menu**  
+<img src="https://github.com/user-attachments/assets/8781943c-1aac-425b-a6d4-24e74ad656aa" width="500"/>
+
+**Gameplay (Level 1: Antalya)**  
+<img src="https://github.com/user-attachments/assets/1c05eec5-c1a9-4e38-8bc1-789b7db9b82d" width="500"/>
+
+**Gameplay (Level 4: İstanbul)**  
+<img src="https://github.com/user-attachments/assets/27679e25-6380-4243-bb39-21cb6fdcc94d" width="500"/>
+
+**High Score Screen**  
+<img src="https://github.com/user-attachments/assets/6141104a-62d6-4a42-ab20-8c7a3b12cea2" width="300"/>
+
 
 
 ✨ Features
